@@ -1,0 +1,24 @@
+{
+    "title": "Casambi",
+    "config": {
+      "step": {
+        "user": {
+          "title": "Fill in your information",
+          "data": {
+            "email": "email",
+            "user_password": "user_password",
+            "network_password": "network_password",
+            "api_key": "api_key"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+        "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+        "unknown": "[%key:common::config_flow::error::unknown%]"
+      },
+      "abort": {
+        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      }
+    }
+  }
