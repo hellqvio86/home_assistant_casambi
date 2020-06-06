@@ -27,7 +27,7 @@ from typing import Any, Callable, Dict, List, Optional
 import voluptuous as vol
 
 from homeassistant.components.light import (
-    ATTR_BRIGHTNESS,
+    ATTR_BRIGHTNESS_PCT,
     SUPPORT_BRIGHTNESS,
     LightEntity,
 )
@@ -137,8 +137,8 @@ class CasambiLight(LightEntity):
     def __init__(
         self, unit, controller,
     ):
-        """Initialize Elgato Key Light."""
-        self._brightness: Optional[int] = None
+        """Initialize Casambi Key Light."""
+        self._brightness_pct: Optional[int] = None
         self._state: Optional[bool] = None
         self._temperature: Optional[int] = None
         self._available = True
@@ -161,9 +161,9 @@ class CasambiLight(LightEntity):
         return self.unit.unique_id
 
     @property
-    def brightness(self) -> Optional[int]:
-        """Return the brightness of this light between 1..255."""
-        return self._brightness
+    def brightness_pct(self) -> Optional[int]:
+        """Return the brightness of this light between 1..100."""
+        return self._brightness_pct
 
     @property
     def supported_features(self) -> int:
@@ -193,10 +193,9 @@ class CasambiLight(LightEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the light."""
-        _LOGGER.debug(f"async_turn_on {self}")
+        _LOGGER.debug(f"async_turn_on {self} kwargs: {kwargs}")
 
         await self.unit.turn_unit_on()
-
 
     @property
     def should_poll(self):
@@ -207,7 +206,7 @@ class CasambiLight(LightEntity):
         """Update Casambi entity."""
         if self.unit.value > 0:
             self._state = True
-            self._brightness = int(math.ceil(self.unit.value * 255))
+            self._brightness_pct = int(math.ceil(self.unit.value * 100))
         else:
             self._state = False
         _LOGGER.debug(f"async_update {self}")
