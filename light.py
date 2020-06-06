@@ -19,7 +19,6 @@ import ssl
 import asyncio
 import aiocasambi
 import async_timeout
-import math
 
 from datetime import timedelta
 from typing import Any, Callable, Dict, List, Optional
@@ -27,7 +26,7 @@ from typing import Any, Callable, Dict, List, Optional
 import voluptuous as vol
 
 from homeassistant.components.light import (
-    ATTR_BRIGHTNESS_PCT,
+    ATTR_BRIGHTNESS,
     SUPPORT_BRIGHTNESS,
     LightEntity,
 )
@@ -138,7 +137,7 @@ class CasambiLight(LightEntity):
         self, unit, controller,
     ):
         """Initialize Casambi Key Light."""
-        self._brightness_pct: Optional[int] = None
+        self._brightness: Optional[int] = None
         self._state: Optional[bool] = None
         self._temperature: Optional[int] = None
         self._available = True
@@ -161,9 +160,9 @@ class CasambiLight(LightEntity):
         return self.unit.unique_id
 
     @property
-    def brightness_pct(self) -> Optional[int]:
-        """Return the brightness of this light between 1..100."""
-        return self._brightness_pct
+    def brightness(self) -> Optional[int]:
+        """Return the brightness of this light between 1..255."""
+        return self._brightness
 
     @property
     def supported_features(self) -> int:
@@ -194,8 +193,15 @@ class CasambiLight(LightEntity):
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the light."""
         _LOGGER.debug(f"async_turn_on {self} kwargs: {kwargs}")
+        brightness = 255
 
-        await self.unit.turn_unit_on()
+        if ATTR_BRIGHTNESS in kwargs:
+            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0),2)
+
+        if brightness == 255:
+            await self.unit.turn_unit_on()
+        else:
+            await self.unit.set_unit_value(value=brightness)
 
     @property
     def should_poll(self):
@@ -206,7 +212,7 @@ class CasambiLight(LightEntity):
         """Update Casambi entity."""
         if self.unit.value > 0:
             self._state = True
-            self._brightness_pct = int(math.ceil(self.unit.value * 100))
+            self._brightness = int(round(self.unit.value * 255))
         else:
             self._state = False
         _LOGGER.debug(f"async_update {self}")
