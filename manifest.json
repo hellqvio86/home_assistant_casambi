@@ -1,7 +1,7 @@
 {
   "domain": "casambi",
   "name": "casambi",
-  "config_flow": true,
+  "config_flow": false,
   "documentation": "https://www.home-assistant.io/integrations/casambi",
   "requirements": [
     "aiocasambi==0.123"
