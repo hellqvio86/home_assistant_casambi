@@ -227,13 +227,20 @@ class CasambiLight(LightEntity):
         #    ATTR_MODEL: self._info.product_name,
         #    ATTR_SOFTWARE_VERSION: f"{self._info.firmware_version} ({self._info.firmware_build_number})",
         #}
+        model = 'Casambi'
+        manufacturer = 'Casambi'
+
+        if self.unit.fixture_model:
+            model = self.unit.fixture_model
+
+        if self.unit.oem:
+            manufacturer =  self.unit.oem
 
         return {
-            ATTR_IDENTIFIERS: {(DOMAIN, "fff")},
-            ATTR_NAME: "Casambi",
-            ATTR_MANUFACTURER: "Casambi",
-            ATTR_MODEL: "Casambi",
-            ATTR_SOFTWARE_VERSION: f"",
+            ATTR_IDENTIFIERS: {(DOMAIN, self.unique_id)},
+            ATTR_NAME: self.unit.name,
+            ATTR_MANUFACTURER: manufacturer,
+            ATTR_MODEL: model,
         }
 
     def __repr__(self) -> str:
