@@ -9,10 +9,11 @@ https://github.com/olofhellqvist/aiocasambi
 ### Installation
 
 #### "Manual" Installation
-Just copy the "gardena" folder to your 'custom_components' folder.
+Just checkout this repo as "casambi" folder in to your 'custom_components' folder.
 
 ```
-[your home-assistant-path]/config/custom_components
+cd [your home-assistant-path]/config/custom_components
+git clone https://github.com/hellqvio86/home_assistant_casambi.git casambi
 ```
 
 ### Configuration
