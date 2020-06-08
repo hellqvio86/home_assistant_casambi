@@ -24,7 +24,7 @@ light:
   platform: casambi
   email: !secret casambi_email
   api_key: !secret casambi_api_key
-  network_password : !secret casambi_network_password # The 
+  network_password : !secret casambi_network_password # The network password
   user_password : !secret casambi_user_password # The site password for your user
 ```
 
