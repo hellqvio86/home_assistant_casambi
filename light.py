@@ -140,7 +140,6 @@ class CasambiLight(LightEntity):
         self._brightness: Optional[int] = None
         self._state: Optional[bool] = None
         self._temperature: Optional[int] = None
-        self._available = True
         self.unit = unit
         self.controller = controller
 
@@ -152,7 +151,7 @@ class CasambiLight(LightEntity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self._available
+        return self.unit.online
 
     @property
     def unique_id(self) -> str:
