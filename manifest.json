@@ -4,7 +4,7 @@
   "config_flow": false,
   "documentation": "https://www.home-assistant.io/integrations/casambi",
   "requirements": [
-    "aiocasambi==0.138"
+    "aiocasambi==0.139"
   ],
   "ssdp": [],
   "zeroconf": [],
