@@ -217,6 +217,9 @@ class CasambiLight(LightEntity):
             self._state = False
         _LOGGER.debug(f"async_update {self}")
 
+        if not self.unit.online:
+            _LOGGER.error(f"unit is not online: {self}")
+
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device information about this Casambi Key Light."""
