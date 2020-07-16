@@ -99,19 +99,20 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
             await controller.start_websocket()
 
     except aiocasambi.LoginRequired:
-        _LOGGER.warning(f"Connected to casambi but couldn't log in")
+        _LOGGER.error(f"Connected to casambi but couldn't log in")
         return False
 
     except aiocasambi.Unauthorized:
-        _LOGGER.warning(f"Connected to casambi but not registered")
+        _LOGGER.error(f"Connected to casambi but not registered")
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.exception('Error connecting to the Casambi')
+        #_LOGGER.exception('Error connecting to the Casambi')
+        _LOGGER.error('Error connecting to the Casambi')
         return False
 
     except aiocasambi.AiocasambiException:
-        _LOGGER.exception('Unknown Casambi communication error occurred')
+        _LOGGER.error('Unknown Casambi communication error occurred')
         return False
 
     await controller.initialize()
