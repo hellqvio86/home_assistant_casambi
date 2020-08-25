@@ -38,6 +38,8 @@ from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
+from aiocasambi.websocket import STATE_DISCONNECTED, STATE_STOPPED
+
 import homeassistant.helpers.config_validation as cv
 
 from .const import (
@@ -68,15 +70,11 @@ SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_TIME_SECS)
 UNITS = {}
 
 async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None):
-    str_config = pprint.pformat(config)
-    #_LOGGER.debug(f"async_setup_platform config: {str_config}")
 
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
-
-    #_LOGGER.debug(f"async_setup_platform user_password: {user_password} network_pasword: {network_password} email: {email} api_key: {api_key}")
 
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
@@ -123,7 +121,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
 
     for unit in units:
         #_LOGGER.debug(f"Casambi unit: f{unit}")
-        casambi_light = CasambiLight(unit, controller)
+        casambi_light = CasambiLight(unit, controller, hass)
         async_add_entities([casambi_light], True)
 
         UNITS[casambi_light.unique_id] = casambi_light
@@ -135,7 +133,7 @@ class CasambiLight(LightEntity):
     """Defines a Casambi Key Light."""
 
     def __init__(
-        self, unit, controller,
+        self, unit, controller, hass
     ):
         """Initialize Casambi Key Light."""
         self._brightness: Optional[int] = None
@@ -143,6 +141,7 @@ class CasambiLight(LightEntity):
         self._temperature: Optional[int] = None
         self.unit = unit
         self.controller = controller
+        self.hass = hass
 
     @property
     def name(self) -> str:
@@ -260,3 +259,17 @@ def signalling_callback(signal, data):
     if signal == aiocasambi.websocket.SIGNAL_DATA:
         for key, value in data.items():
             UNITS[key].process_update(value)
+    elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
+        (data == aiocasambi.websocket.STATE_STOPPED or data == aiocasambi.websocket.STATE_DISCONNECTED):
+
+        # Ugly hack
+        hass = None
+        controller = None
+
+        for item in UNITS:
+            hass = item.hass
+            controller = item.controller
+            break
+
+        hass.loop.create_task(controller.reconnect())
+        
