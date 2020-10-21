@@ -1,7 +1,8 @@
 # Home assistant Casambi Lights support
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 
 Custom component to support Casambi Lights, all lights will be automatically discovered.
-It uses a seperate library (also written by me), link to library project:
+It uses a separate library (also written by me), link to library project:
 https://github.com/olofhellqvist/aiocasambi
 
 ## Usage
@@ -15,6 +16,9 @@ Just checkout this repo as "casambi" folder in to your 'custom_components' folde
 cd [your home-assistant-path]/config/custom_components
 git clone https://github.com/hellqvio86/home_assistant_casambi.git casambi
 ```
+
+#### Installation via HACS
+Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories)
 
 ### Configuration
 Add these lines in your configuration.yml
