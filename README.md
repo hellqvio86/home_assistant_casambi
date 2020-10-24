@@ -10,15 +10,17 @@ https://github.com/olofhellqvist/aiocasambi
 ### Installation
 
 #### "Manual" Installation
-Just checkout this repo as "casambi" folder in to your 'custom_components' folder.
-
-```
-cd [your home-assistant-path]/config/custom_components
-git clone https://github.com/hellqvio86/home_assistant_casambi.git casambi
-```
+Just place the directory "casambi" in to your 'custom_components' folder.
 
 #### Installation via HACS
 Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories)
+
+1. Go to any of the sections (integrations, frontend, automation).
+2. Click on the 3 dots in the top right corner.
+3. Select "Custom repositories"
+4. Add the URL to the repository.
+5. Select the correct category.
+6. Click the "ADD" button.
 
 ### Configuration
 Add these lines in your configuration.yml
