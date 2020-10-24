@@ -7,15 +7,18 @@ https://github.com/olofhellqvist/aiocasambi
 
 ## Usage
 
+### Prerequisite
+Request developer api key from Casambi: https://developer.casambi.com/
+
 ### Installation
 
 #### "Manual" Installation
 Just place the directory "casambi" in to your 'custom_components' folder.
 
 #### Installation via HACS
-Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories)
+Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories):
 
-1. Go to any of the sections (integrations, frontend, automation).
+1. Go to integrations section.
 2. Click on the 3 dots in the top right corner.
 3. Select "Custom repositories"
 4. Add the URL to the repository.
