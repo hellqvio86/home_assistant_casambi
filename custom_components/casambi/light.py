@@ -267,9 +267,11 @@ def signalling_callback(signal, data):
         controller = None
 
         for item in UNITS:
-            hass = item.hass
-            controller = item.controller
-            break
+            if hasattr(item, 'hass') and hasattr(item, 'controller'):
+                hass = item.hass
+                controller = item.controller
+                break
 
-        hass.loop.create_task(controller.reconnect())
+        if hass and controller:
+            hass.loop.create_task(controller.reconnect())
         
