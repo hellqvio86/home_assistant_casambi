@@ -31,6 +31,7 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.core import callback
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers.entity import Entity
