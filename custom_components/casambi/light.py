@@ -254,7 +254,7 @@ class CasambiLight(LightEntity):
         return result
 
 
-def signalling_callback(signal, data):
+async def signalling_callback(signal, data):
     _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
     if signal == aiocasambi.websocket.SIGNAL_DATA:
         for key, value in data.items():
