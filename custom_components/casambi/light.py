@@ -263,15 +263,13 @@ def signalling_callback(signal, data):
         (data == aiocasambi.websocket.STATE_STOPPED or data == aiocasambi.websocket.STATE_DISCONNECTED):
 
         # Ugly hack
-        hass = None
         controller = None
 
         for item in UNITS:
-            if hasattr(item, 'hass') and hasattr(item, 'controller'):
-                hass = item.hass
+            if hasattr(item, 'controller'):
                 controller = item.controller
                 break
 
-        if hass and controller:
-            hass.loop.create_task(controller.reconnect())
+        if controller:
+            await controller.reconnect()
         
