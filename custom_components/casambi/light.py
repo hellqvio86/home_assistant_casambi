@@ -254,22 +254,14 @@ class CasambiLight(LightEntity):
         return result
 
 
-async def signalling_callback(signal, data):
+def signalling_callback(signal, data):
     _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
     if signal == aiocasambi.websocket.SIGNAL_DATA:
         for key, value in data.items():
             UNITS[key].process_update(value)
     elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
-        (data == aiocasambi.websocket.STATE_STOPPED or data == aiocasambi.websocket.STATE_DISCONNECTED):
-
-        # Ugly hack
-        controller = None
-
-        for item in UNITS:
-            if hasattr(item, 'controller'):
-                controller = item.controller
-                break
-
-        if controller:
-            await controller.reconnect()
-        
+        (data == aiocasambi.websocket.STATE_STOPPED): 
+        _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
+    elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
+        (data == aiocasambi.websocket.STATE_DISCONNECTED):
+        _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
