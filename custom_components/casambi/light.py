@@ -268,12 +268,12 @@ def signalling_callback(signal, data):
         _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
         # Set all units to offline
-        for key, value in data.items():
+        for key in UNITS:
             UNITS[key].set_online(False)
     elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
         (data == aiocasambi.websocket.STATE_DISCONNECTED):
         _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
         # Set all units to offline
-        for key, value in data.items():
+        for key in UNITS:
             UNITS[key].set_online(False)
