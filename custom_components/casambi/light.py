@@ -39,7 +39,7 @@ from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
-from aiocasambi.websocket import STATE_DISCONNECTED, STATE_STOPPED
+from aiocasambi.websocket import STATE_DISCONNECTED, STATE_STOPPED, STATE_RUNNING
 
 import homeassistant.helpers.config_validation as cv
 
@@ -67,6 +67,7 @@ CONFIG_SCHEMA = vol.Schema({
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_TIME_SECS)
+RETRY_TIMER = 300
 
 UNITS = {}
 
@@ -116,7 +117,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
 
     await controller.initialize()
 
-    units =  controller.get_units()
+    units = controller.get_units()
 
     #_LOGGER.debug(f"Casambi unit: f{units}")
 
@@ -261,6 +262,27 @@ class CasambiLight(LightEntity):
 
         return result
 
+async def async_reconnect(self) -> None:
+    controller = None
+    hass = None
+
+    # Get hass
+    for key in UNITS:
+        if not hass:
+            hass = UNITS[key].hass
+        
+        if not controller:
+            controller = UNITS[key].controller
+
+        if controller and hass:
+            break
+    
+    await controller.reconnect()
+    
+    if controller != STATE_RUNNING:
+        # Try again to reconnect
+        self.hass.loop.call_later(RETRY_TIMER, async_reconnect)
+
 
 def signalling_callback(signal, data):
     _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
@@ -271,13 +293,27 @@ def signalling_callback(signal, data):
         (data == aiocasambi.websocket.STATE_STOPPED): 
         _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
+        hass = None
+
         # Set all units to offline
         for key in UNITS:
+            if not hass:
+                hass = UNITS[key].hass
+
             UNITS[key].set_online(False)
+        
+        hass.loop.create_task(async_reconnect)
     elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
         (data == aiocasambi.websocket.STATE_DISCONNECTED):
         _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
+        hass = None
+
         # Set all units to offline
         for key in UNITS:
+            if not hass:
+                hass = UNITS[key].hass
+
             UNITS[key].set_online(False)
+        
+        hass.loop.create_task(async_reconnect())
