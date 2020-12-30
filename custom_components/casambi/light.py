@@ -175,6 +175,7 @@ class CasambiLight(LightEntity):
         return bool(self._state)
     
     def set_online(self, online):
+        _LOGGER.debug(f"set_online to {online}")
         self.unit.online = online
 
     def process_update(self, data):
