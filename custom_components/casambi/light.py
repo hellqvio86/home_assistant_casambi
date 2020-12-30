@@ -174,8 +174,12 @@ class CasambiLight(LightEntity):
         """Return the state of the light."""
         return bool(self._state)
     
+    @online.setter
+    def online(self, online):
+        self.unit.online = online
+
     def process_update(self, data):
-        """Process callback message,, update home assistant light state"""
+        """Process callback message, update home assistant light state"""
         _LOGGER.debug(f"process_update self: {self} data: {data}")
 
         #if data.value > 0:
@@ -263,6 +267,14 @@ def signalling_callback(signal, data):
     elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
         (data == aiocasambi.websocket.STATE_STOPPED): 
         _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
+
+        # Set all units to offline
+        for key, value in data.items():
+            UNITS[key].online(False)
     elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
         (data == aiocasambi.websocket.STATE_DISCONNECTED):
         _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
+
+        # Set all units to offline
+        for key, value in data.items():
+            UNITS[key].online(False)
