@@ -262,7 +262,7 @@ class CasambiLight(LightEntity):
 
         return result
 
-async def async_reconnect(self) -> None:
+async def async_reconnect():
     controller = None
     hass = None
 
