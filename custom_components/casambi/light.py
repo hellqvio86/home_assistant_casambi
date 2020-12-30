@@ -175,8 +175,11 @@ class CasambiLight(LightEntity):
         return bool(self._state)
     
     def set_online(self, online):
-        _LOGGER.debug(f"set_online to {online}")
         self.unit.online = online
+
+        _LOGGER.debug(f"set_online to {online} for unit {self}")
+
+        self.async_schedule_update_ha_state(True)
 
     def process_update(self, data):
         """Process callback message, update home assistant light state"""
