@@ -284,7 +284,7 @@ async def async_reconnect():
         _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {RETRY_TIMER} seconds")
 
         # Try again to reconnect
-        self.hass.loop.call_later(RETRY_TIMER, async_reconnect)
+        hass.loop.call_later(RETRY_TIMER, async_reconnect)
 
 
 def signalling_callback(signal, data):
