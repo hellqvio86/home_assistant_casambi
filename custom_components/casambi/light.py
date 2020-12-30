@@ -277,9 +277,12 @@ async def async_reconnect(self) -> None:
         if controller and hass:
             break
     
+    _LOGGER.debug("async_reconnect: trying to connect to casambi")
     await controller.reconnect()
     
     if controller != STATE_RUNNING:
+        _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {RETRY_TIMER} seconds")
+
         # Try again to reconnect
         self.hass.loop.call_later(RETRY_TIMER, async_reconnect)
 
@@ -302,6 +305,7 @@ def signalling_callback(signal, data):
 
             UNITS[key].set_online(False)
         
+        _LOGGER.debug("signalling_callback: creating reconnection")
         hass.loop.create_task(async_reconnect)
     elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
         (data == aiocasambi.websocket.STATE_DISCONNECTED):
@@ -316,4 +320,5 @@ def signalling_callback(signal, data):
 
             UNITS[key].set_online(False)
         
+        _LOGGER.debug("signalling_callback: creating reconnection")
         hass.loop.create_task(async_reconnect())
