@@ -3,25 +3,14 @@ Support for Casambi lights.
 For more details about this component, please refer to the documentation at
 https://home-assistant.io/components/@todo
 """
-# https://developers.home-assistant.io/docs/creating_component_index/
-# https://github.com/home-assistant/core/blob/dev/homeassistant/components/unifi/__init__.py
-# https://github.com/home-assistant/example-custom-config/tree/master/custom_components/example_light/
-# https://developers.home-assistant.io/docs/asyncio_working_with_async/
-# https://github.com/home-assistant/core/blob/master/homeassistant/components/deconz/deconz_device.py
-# https://github.com/home-assistant/core/blob/master/homeassistant/components/deconz/light.py
-# https://github.com/home-assistant/core/blob/dev/homeassistant/components/elgato/__init__.py
-# https://developers.home-assistant.io/docs/core/entity/light
-
-"""Support for LED lights."""
 import logging
-import pprint
 import ssl
 import asyncio
 import aiocasambi
 import async_timeout
 
 from datetime import timedelta
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import voluptuous as vol
 
@@ -31,15 +20,13 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.core import callback
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
-from aiocasambi.websocket import STATE_DISCONNECTED, STATE_STOPPED, STATE_RUNNING
+from aiocasambi.websocket import (
+    STATE_RUNNING
+)
 
 import homeassistant.helpers.config_validation as cv
 
@@ -51,7 +38,6 @@ from .const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
-    ATTR_SOFTWARE_VERSION,
     SCAN_INTERVAL_TIME_SECS
 )
 
@@ -67,11 +53,10 @@ CONFIG_SCHEMA = vol.Schema({
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_TIME_SECS)
-RETRY_TIMER = 300
 
-UNITS = {}
 
-async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None):
+async def async_setup_platform(hass: HomeAssistant, config: dict,
+    async_add_entities, discovery_info=None):
 
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
@@ -81,6 +66,8 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
+    casambi_controller = CasambiController(hass)
+
     controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
@@ -89,8 +76,10 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=signalling_callback,
+        callback=casambi_controller.signalling_callback,
     )
+
+    casambi_controller.controller = casambi_controller
 
     try:
         with async_timeout.timeout(10):
@@ -99,15 +88,14 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
             await controller.start_websocket()
 
     except aiocasambi.LoginRequired:
-        _LOGGER.error(f"Connected to casambi but couldn't log in")
+        _LOGGER.error("Connected to casambi but couldn't log in")
         return False
 
     except aiocasambi.Unauthorized:
-        _LOGGER.error(f"Connected to casambi but not registered")
+        _LOGGER.error("Connected to casambi but not registered")
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        #_LOGGER.exception('Error connecting to the Casambi')
         _LOGGER.error('Error connecting to the Casambi')
         return False
 
@@ -119,16 +107,77 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
 
     units = controller.get_units()
 
-    #_LOGGER.debug(f"Casambi unit: f{units}")
-
     for unit in units:
-        #_LOGGER.debug(f"Casambi unit: f{unit}")
         casambi_light = CasambiLight(unit, controller, hass)
         async_add_entities([casambi_light], True)
 
-        UNITS[casambi_light.unique_id] = casambi_light
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
+
+
+class CasambiController:
+    """Manages a single UniFi Controller."""
+
+    def __init__(self, hass, network_retry_timer=30, units={}):
+        """Initialize the system."""
+        self._hass = hass
+        self._controller = None
+        self._network_retry_timer = network_retry_timer
+        self.units = units
+
+    @property
+    def controller(self):
+        return self._controller
+
+    @controller.setter
+    def controller(self, controller):
+        self._controller = controller
+
+    async def async_reconnect(self):
+        _LOGGER.debug("async_reconnect: trying to connect to casambi")
+        await self._controller.reconnect()
+
+        if self._controller.get_websocket_state() != STATE_RUNNING:
+            _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {self._network_retry_timer} seconds")
+
+            # Try again to reconnect
+            self._hass.loop.call_later(self._network_retry_timer,
+                self.async_reconnect)
+
+    def set_all_units_offline(self):
+        for key in self.units:
+            self.units[key].set_online(False)
+
+    def signalling_callback(self, signal, data):
+
+        _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
+
+        if signal == aiocasambi.websocket.SIGNAL_DATA:
+            for key, value in data.items():
+                self.units[key].process_update(value)
+        elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
+            (data == aiocasambi.websocket.STATE_STOPPED):
+            _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
+
+            hass = None
+
+            # Set all units to offline
+            self.set_all_units_offline()
+
+            _LOGGER.debug("signalling_callback: creating reconnection")
+            hass.loop.create_task(self.async_reconnect())
+        elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
+            (data == aiocasambi.websocket.STATE_DISCONNECTED):
+            _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
+
+            hass = None
+
+            # Set all units to offline
+            self.set_all_units_offline()
+
+            _LOGGER.debug("signalling_callback: creating reconnection")
+            hass.loop.create_task(self.async_reconnect())
 
 
 class CasambiLight(LightEntity):
@@ -174,7 +223,7 @@ class CasambiLight(LightEntity):
     def is_on(self) -> bool:
         """Return the state of the light."""
         return bool(self._state)
-    
+
     def set_online(self, online):
         self.unit.online = online
 
@@ -186,11 +235,6 @@ class CasambiLight(LightEntity):
         """Process callback message, update home assistant light state"""
         _LOGGER.debug(f"process_update self: {self} data: {data}")
 
-        #if data.value > 0:
-        #    self._state = True
-        #    self._brightness = int(math.ceil(data.value * 255))
-        #else:
-        #    self._state = False
         self.async_schedule_update_ha_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
@@ -204,7 +248,7 @@ class CasambiLight(LightEntity):
         brightness = 255
 
         if ATTR_BRIGHTNESS in kwargs:
-            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0),2)
+            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
 
         if brightness == 255:
             await self.unit.turn_unit_on()
@@ -231,13 +275,6 @@ class CasambiLight(LightEntity):
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device information about this Casambi Key Light."""
-        #return {
-        #    ATTR_IDENTIFIERS: {(DOMAIN, self._info.serial_number)},
-        #    ATTR_NAME: self._info.product_name,
-        #    ATTR_MANUFACTURER: "Casambi",
-        #    ATTR_MODEL: self._info.product_name,
-        #    ATTR_SOFTWARE_VERSION: f"{self._info.firmware_version} ({self._info.firmware_build_number})",
-        #}
         model = 'Casambi'
         manufacturer = 'Casambi'
 
@@ -245,7 +282,7 @@ class CasambiLight(LightEntity):
             model = self.unit.fixture_model
 
         if self.unit.oem:
-            manufacturer =  self.unit.oem
+            manufacturer = self.unit.oem
 
         return {
             ATTR_IDENTIFIERS: {(DOMAIN, self.unique_id)},
@@ -261,64 +298,3 @@ class CasambiLight(LightEntity):
         result = f"<Casambi light {name}: unit={self.unit}"
 
         return result
-
-async def async_reconnect():
-    controller = None
-    hass = None
-
-    # Get hass
-    for key in UNITS:
-        if not hass:
-            hass = UNITS[key].hass
-        
-        if not controller:
-            controller = UNITS[key].controller
-
-        if controller and hass:
-            break
-    
-    _LOGGER.debug("async_reconnect: trying to connect to casambi")
-    await controller.reconnect()
-    
-    if controller != STATE_RUNNING:
-        _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {RETRY_TIMER} seconds")
-
-        # Try again to reconnect
-        hass.loop.call_later(RETRY_TIMER, async_reconnect)
-
-
-def signalling_callback(signal, data):
-    _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
-    if signal == aiocasambi.websocket.SIGNAL_DATA:
-        for key, value in data.items():
-            UNITS[key].process_update(value)
-    elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
-        (data == aiocasambi.websocket.STATE_STOPPED): 
-        _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
-
-        hass = None
-
-        # Set all units to offline
-        for key in UNITS:
-            if not hass:
-                hass = UNITS[key].hass
-
-            UNITS[key].set_online(False)
-        
-        _LOGGER.debug("signalling_callback: creating reconnection")
-        hass.loop.create_task(async_reconnect)
-    elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
-        (data == aiocasambi.websocket.STATE_DISCONNECTED):
-        _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
-
-        hass = None
-
-        # Set all units to offline
-        for key in UNITS:
-            if not hass:
-                hass = UNITS[key].hass
-
-            UNITS[key].set_online(False)
-        
-        _LOGGER.debug("signalling_callback: creating reconnection")
-        hass.loop.create_task(async_reconnect())
