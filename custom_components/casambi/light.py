@@ -79,7 +79,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         callback=casambi_controller.signalling_callback,
     )
 
-    casambi_controller.controller = casambi_controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
