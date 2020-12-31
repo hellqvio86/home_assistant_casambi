@@ -25,7 +25,11 @@ from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
 from aiocasambi.websocket import (
-    STATE_RUNNING
+    SIGNAL_DATA,
+    STATE_RUNNING,
+    SIGNAL_CONNECTION_STATE,
+    STATE_DISCONNECTED,
+    STATE_STOPPED,
 )
 
 import homeassistant.helpers.config_validation as cv
@@ -79,7 +83,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         callback=casambi_controller.signalling_callback,
     )
 
-    casambi_controller.controller = casambi_controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -153,31 +157,25 @@ class CasambiController:
 
         _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
 
-        if signal == aiocasambi.websocket.SIGNAL_DATA:
+        if signal == SIGNAL_DATA:
             for key, value in data.items():
                 self.units[key].process_update(value)
-        elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
-            (data == aiocasambi.websocket.STATE_STOPPED):
+        elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
-            hass = None
-
             # Set all units to offline
             self.set_all_units_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            hass.loop.create_task(self.async_reconnect())
-        elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
-            (data == aiocasambi.websocket.STATE_DISCONNECTED):
+            self._hass.loop.create_task(self.async_reconnect())
+        elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
-            hass = None
-
             # Set all units to offline
             self.set_all_units_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            hass.loop.create_task(self.async_reconnect())
+            self._hass.loop.create_task(self.async_reconnect())
 
 
 class CasambiLight(LightEntity):
