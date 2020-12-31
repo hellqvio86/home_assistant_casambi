@@ -160,24 +160,20 @@ class CasambiController:
             (data == aiocasambi.websocket.STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
-            hass = None
-
             # Set all units to offline
             self.set_all_units_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            hass.loop.create_task(self.async_reconnect())
+            self._hass.loop.create_task(self.async_reconnect())
         elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
             (data == aiocasambi.websocket.STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
-            hass = None
-
             # Set all units to offline
             self.set_all_units_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            hass.loop.create_task(self.async_reconnect())
+            self._hass.loop.create_task(self.async_reconnect())
 
 
 class CasambiLight(LightEntity):
