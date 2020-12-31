@@ -4,7 +4,7 @@
   "config_flow": false,
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
   "requirements": [
-    "aiocasambi==0.155"
+    "aiocasambi==0.156"
   ],
   "ssdp": [],
   "zeroconf": [],
