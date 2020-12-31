@@ -10,7 +10,7 @@ import aiocasambi
 import async_timeout
 
 from datetime import timedelta
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import voluptuous as vol
 
@@ -20,15 +20,13 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.core import callback
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
-from aiocasambi.websocket import STATE_DISCONNECTED, STATE_STOPPED, STATE_RUNNING
+from aiocasambi.websocket import (
+    STATE_RUNNING
+)
 
 import homeassistant.helpers.config_validation as cv
 
@@ -40,7 +38,6 @@ from .const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
-    ATTR_SOFTWARE_VERSION,
     SCAN_INTERVAL_TIME_SECS
 )
 
@@ -58,7 +55,8 @@ _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_TIME_SECS)
 
 
-async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None):
+async def async_setup_platform(hass: HomeAssistant, config: dict,
+    async_add_entities, discovery_info=None):
 
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
@@ -121,7 +119,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict, async_add_enti
 class CasambiController:
     """Manages a single UniFi Controller."""
 
-    def __init__(self, hass, network_retry_timer=30, units = {}):
+    def __init__(self, hass, network_retry_timer=30, units={}):
         """Initialize the system."""
         self._hass = hass
         self._controller = None
@@ -144,7 +142,7 @@ class CasambiController:
             _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {self._network_retry_timer} seconds")
 
             # Try again to reconnect
-            self._hass.loop.call_later(self._network_retry_timer, \
+            self._hass.loop.call_later(self._network_retry_timer,
                 self.async_reconnect)
 
     def set_all_units_offline(self):
@@ -152,7 +150,9 @@ class CasambiController:
             self.units[key].set_online(False)
 
     def signalling_callback(self, signal, data):
+
         _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
+
         if signal == aiocasambi.websocket.SIGNAL_DATA:
             for key, value in data.items():
                 self.units[key].process_update(value)
@@ -167,7 +167,7 @@ class CasambiController:
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             hass.loop.create_task(self.async_reconnect())
-        elif signal == signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
+        elif signal == aiocasambi.websocket.SIGNAL_CONNECTION_STATE and \
             (data == aiocasambi.websocket.STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
@@ -223,7 +223,7 @@ class CasambiLight(LightEntity):
     def is_on(self) -> bool:
         """Return the state of the light."""
         return bool(self._state)
-    
+
     def set_online(self, online):
         self.unit.online = online
 
@@ -235,11 +235,6 @@ class CasambiLight(LightEntity):
         """Process callback message, update home assistant light state"""
         _LOGGER.debug(f"process_update self: {self} data: {data}")
 
-        #if data.value > 0:
-        #    self._state = True
-        #    self._brightness = int(math.ceil(data.value * 255))
-        #else:
-        #    self._state = False
         self.async_schedule_update_ha_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
@@ -253,7 +248,7 @@ class CasambiLight(LightEntity):
         brightness = 255
 
         if ATTR_BRIGHTNESS in kwargs:
-            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0),2)
+            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
 
         if brightness == 255:
             await self.unit.turn_unit_on()
@@ -280,13 +275,6 @@ class CasambiLight(LightEntity):
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device information about this Casambi Key Light."""
-        #return {
-        #    ATTR_IDENTIFIERS: {(DOMAIN, self._info.serial_number)},
-        #    ATTR_NAME: self._info.product_name,
-        #    ATTR_MANUFACTURER: "Casambi",
-        #    ATTR_MODEL: self._info.product_name,
-        #    ATTR_SOFTWARE_VERSION: f"{self._info.firmware_version} ({self._info.firmware_build_number})",
-        #}
         model = 'Casambi'
         manufacturer = 'Casambi'
 
@@ -294,7 +282,7 @@ class CasambiLight(LightEntity):
             model = self.unit.fixture_model
 
         if self.unit.oem:
-            manufacturer =  self.unit.oem
+            manufacturer = self.unit.oem
 
         return {
             ATTR_IDENTIFIERS: {(DOMAIN, self.unique_id)},
