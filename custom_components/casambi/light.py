@@ -227,13 +227,17 @@ class CasambiLight(LightEntity):
 
         _LOGGER.debug(f"set_online to {online} for unit {self}")
 
-        self.async_schedule_update_ha_state(True)
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            self.async_schedule_update_ha_state(True)
 
     def process_update(self, data):
         """Process callback message, update home assistant light state"""
         _LOGGER.debug(f"process_update self: {self} data: {data}")
 
-        self.async_schedule_update_ha_state(True)
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            self.async_schedule_update_ha_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         _LOGGER.debug(f"async_turn_off {self}")
