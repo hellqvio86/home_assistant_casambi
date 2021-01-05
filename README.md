@@ -37,6 +37,14 @@ light:
   user_password : !secret casambi_user_password # The site password for your user
 ```
 
+Optional arguments
+```
+light:
+  platform: casambi
+  ...
+  network_timeout: 30    #default is 300 seconds
+```
+
 Of course you need to make sure you have the secrets available.
 
 ### Troubleshot
