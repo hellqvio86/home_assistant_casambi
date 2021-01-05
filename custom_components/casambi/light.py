@@ -6,6 +6,8 @@ https://home-assistant.io/components/@todo
 import logging
 import ssl
 import asyncio
+
+from voluptuous.validators import Number
 import aiocasambi
 import async_timeout
 
@@ -39,10 +41,10 @@ from .const import (
     WIRE_ID,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
+    CONF_NETWORK_TIMEOUT,
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
-    SCAN_INTERVAL_TIME_SECS
 )
 
 CONFIG_SCHEMA = vol.Schema({
@@ -51,12 +53,11 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Required(CONF_NETWORK_PASSWORD): cv.string,
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
+        vol.Optional(CONF_NETWORK_TIMEOUT): cv.positive_int,
     })
 }, extra=vol.ALLOW_EXTRA)
 
 _LOGGER = logging.getLogger(__name__)
-
-SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_TIME_SECS)
 
 
 async def async_setup_platform(hass: HomeAssistant, config: dict,
@@ -66,6 +67,11 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
+
+    network_timeout = 300
+
+    if CONF_NETWORK_TIMEOUT in config:
+        network_timeout = config[CONF_NETWORK_TIMEOUT]
 
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
@@ -81,6 +87,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
         callback=casambi_controller.signalling_callback,
+        network_timeout=network_timeout,
     )
 
     casambi_controller.controller = controller
