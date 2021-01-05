@@ -37,7 +37,7 @@ light:
   user_password : !secret casambi_user_password # The site password for your user
 ```
 
-Optional arguments
+Optional arguments:
 ```
 light:
   platform: casambi
