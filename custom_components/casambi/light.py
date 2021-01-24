@@ -7,11 +7,9 @@ import logging
 import ssl
 import asyncio
 
-from voluptuous.validators import Number
 import aiocasambi
 import async_timeout
 
-from datetime import timedelta
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
@@ -61,7 +59,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_platform(hass: HomeAssistant, config: dict,
-    async_add_entities, discovery_info=None):
+                               async_add_entities, discovery_info=None):
 
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
@@ -150,11 +148,13 @@ class CasambiController:
         await self._controller.reconnect()
 
         if self._controller.get_websocket_state() != STATE_RUNNING:
-            _LOGGER.debug(f"async_reconnect: could not connect to casambi, trying again in {self._network_retry_timer} seconds")
+            msg = 'async_reconnect: could not connect to casambi. '
+            msg += f"trying again in {self._network_retry_timer} seconds"
+            _LOGGER.debug(msg)
 
             # Try again to reconnect
             self._hass.loop.call_later(self._network_retry_timer,
-                self.async_reconnect)
+                                       self.async_reconnect)
 
     def set_all_units_offline(self):
         for key in self.units:
@@ -175,7 +175,8 @@ class CasambiController:
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
-        elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_DISCONNECTED):
+        elif signal == SIGNAL_CONNECTION_STATE \
+                and (data == STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
             # Set all units to offline
