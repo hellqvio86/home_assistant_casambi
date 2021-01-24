@@ -72,6 +72,7 @@ Based on https://developers.home-assistant.io/docs/integration_quality_scale_ind
 * If your component has platforms, define a PLATFORM_SCHEMA instead of a CONFIG_SCHEMA.
 * If using a PLATFORM_SCHEMA to be used with EntityComponent, import base from homeassistant.helpers.config_validation
 * Never depend on users adding things to customize to configure behavior inside your component/platform.
+* Group your calls to add_devices if possible.
 * Prefix component event names with the domain name. For example, use netatmo_person instead of person for the netatmo component. Please be mindful of the data structure as documented on our Data Science portal.
 * Regression tests
 * Raise PlatformNotReady if unable to connect during platform setup (if appropriate)
