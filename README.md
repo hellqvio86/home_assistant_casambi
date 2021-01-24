@@ -67,7 +67,7 @@ Based on https://developers.home-assistant.io/docs/integration_quality_scale_ind
 * Voluptuous schema present for configuration validation.
 * Voluptuous schema extends schema from component
 (e.g., hue.light.PLATFORM_SCHEMA extends light.PLATFORM_SCHEMA)
-* Default parameters specified in voluptuous schema, not in setup(…)
+* Default parameters specified in voluptuous schema, not in setup(…)/setup_platform(...)
 * Schema using as many generic config keys as possible from homeassistant.const
 * If your component has platforms, define a PLATFORM_SCHEMA instead of a CONFIG_SCHEMA.
 * If using a PLATFORM_SCHEMA to be used with EntityComponent, import base from homeassistant.helpers.config_validation
