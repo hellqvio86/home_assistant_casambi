@@ -64,7 +64,9 @@ Based on https://developers.home-assistant.io/docs/integration_quality_scale_ind
 * Use existing constants from const.py
   * Only add new constants to const.py if they are widely used. Otherwise keep them on components level / platform level.
   * Use CONF_MONITORED_CONDITIONS instead of CONF_MONITORED_VARIABLES
-* Voluptuous schema present for configuration validation
+* Voluptuous schema present for configuration validation.
+* Voluptuous schema extends schema from component
+(e.g., hue.light.PLATFORM_SCHEMA extends light.PLATFORM_SCHEMA)
 * Default parameters specified in voluptuous schema, not in setup(…)
 * Schema using as many generic config keys as possible from homeassistant.const
 * If your component has platforms, define a PLATFORM_SCHEMA instead of a CONFIG_SCHEMA.
