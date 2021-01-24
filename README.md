@@ -56,3 +56,6 @@ logger:
     homeassistant.components.casambi: debug
     custom_components.casambi: debug
 ```
+
+### Todo list
+Based on https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ , https://developers.home-assistant.io/docs/creating_platform_code_review/
