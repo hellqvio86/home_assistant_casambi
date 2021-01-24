@@ -73,6 +73,12 @@ Based on https://developers.home-assistant.io/docs/integration_quality_scale_ind
 * If using a PLATFORM_SCHEMA to be used with EntityComponent, import base from homeassistant.helpers.config_validation
 * Never depend on users adding things to customize to configure behavior inside your component/platform.
 * Group your calls to add_devices if possible.
+* If the platform adds extra services, the format should be <domain of your integration>.<service name>. So if your integration's domain is "awesome_sauce" and you are making a light platform, you would register services under the awesome_sauce domain. Make sure that your services verify permissions.
+* Avoid passing in hass as a parameter to the entity. hass will be set on the entity when the entity is added to Home Assistant. This means you can access hass as self.hass inside the entity.
+* Do not call update() in constructor, use add_entities(devices, True) instead.
+* Do not do any I/O inside properties. Cache values inside update() instead.
+* When dealing with time, state and/or attributes should not contain relative time since something happened. Instead, it should store UTC timestamps.
+* Leverage the entity lifecycle callbacks to attach event listeners or clean up connections.
 * Prefix component event names with the domain name. For example, use netatmo_person instead of person for the netatmo component. Please be mindful of the data structure as documented on our Data Science portal.
 * Regression tests
 * Raise PlatformNotReady if unable to connect during platform setup (if appropriate)
