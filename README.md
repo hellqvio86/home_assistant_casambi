@@ -60,6 +60,17 @@ logger:
 ### Todo list
 Based on https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ , https://developers.home-assistant.io/docs/creating_platform_code_review/
 
+* Follow style guidelines https://developers.home-assistant.io/docs/development_guidelines/
+* Use existing constants from const.py
+  * Only add new constants to const.py if they are widely used. Otherwise keep them on components level
+* Voluptuous schema present for configuration validation
+* Default parameters specified in voluptuous schema, not in setup(…)
+* Schema using as many generic config keys as possible from homeassistant.const
+* If your component has platforms, define a PLATFORM_SCHEMA instead of a CONFIG_SCHEMA.
+* If using a PLATFORM_SCHEMA to be used with EntityComponent, import base from homeassistant.helpers.config_validation
+* Never depend on users adding things to customize to configure behavior inside your component.
+* Prefix component event names with the domain name. For example, use netatmo_person instead of person for the netatmo component. Please be mindful of the data structure as documented on our Data Science portal.
+* Regression tests
 * Raise PlatformNotReady if unable to connect during platform setup (if appropriate)
 * Handles expiration of auth credentials. Refresh if possible or print correct error and fail setup. If based on a config entry, should trigger a new config entry flow to re-authorize.
 * Handles internet unavailable. Log a warning once when unavailable, log once when reconnected.
