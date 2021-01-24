@@ -66,10 +66,10 @@ Based on https://developers.home-assistant.io/docs/integration_quality_scale_ind
 * Handles device/service unavailable. Log a warning once when unavailable, log once when reconnected.
 * Set available property to False if appropriate
 * Configurable via config entries.
-** Don't allow configuring already configured device/service (example: no 2 entries for same hub)
-** Tests for the config flow
-** Discoverable (if available)
-** Set unique ID in config flow (if available)
+  * Don't allow configuring already configured device/service (example: no 2 entries for same hub)
+  * Tests for the config flow
+  * Discoverable (if available)
+  * Set unique ID in config flow (if available)
 * Entities have device info (if available)
 * Tests for fetching data from the integration and controlling it
 * Has a code owner
