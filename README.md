@@ -58,11 +58,12 @@ logger:
 ```
 
 ### Todo list
-Based on https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ , https://developers.home-assistant.io/docs/creating_platform_code_review/
+Based on https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ , https://developers.home-assistant.io/docs/creating_platform_code_review/ :
 
 * Follow style guidelines https://developers.home-assistant.io/docs/development_guidelines/
 * Use existing constants from const.py
-  * Only add new constants to const.py if they are widely used. Otherwise keep them on components level
+  * Only add new constants to const.py if they are widely used. Otherwise keep them on components level / platform level.
+  * Use CONF_MONITORED_CONDITIONS instead of CONF_MONITORED_VARIABLES
 * Voluptuous schema present for configuration validation
 * Default parameters specified in voluptuous schema, not in setup(…)
 * Schema using as many generic config keys as possible from homeassistant.const
