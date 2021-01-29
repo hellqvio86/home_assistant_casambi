@@ -125,23 +125,27 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
 
     units = controller.get_units()
 
-    for unit in units:
-        casambi_light = CasambiLight(unit, controller, hass)
-        async_add_entities([casambi_light], True)
-
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
-
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
         # Name of the data. For logging purposes.
-        name="sensor",
+        name="light",
         update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=60),
     )
 
     await coordinator.async_refresh()
+
+    for unit in units:
+        casambi_light = CasambiLight(coordinator,
+                            unit.unique_id,
+                            unit,
+                            controller,
+                            hass)
+        async_add_entities([casambi_light], True)
+
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -212,13 +216,15 @@ class CasambiController:
             self._hass.loop.create_task(self.async_reconnect())
 
 
-class CasambiLight(LightEntity):
+class CasambiLight(CoordinatorEntity, LightEntity):
     """Defines a Casambi Key Light."""
 
     def __init__(
-        self, unit, controller, hass
+        self, coordinator, idx, unit, controller, hass
     ):
         """Initialize Casambi Key Light."""
+        super().__init__(coordinator)
+        self.idx = idx
         self._brightness: Optional[int] = None
         self._state: Optional[bool] = None
         self._temperature: Optional[int] = None
