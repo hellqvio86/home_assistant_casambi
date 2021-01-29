@@ -1,5 +1,4 @@
 """Constants for the casambi integration."""
-
 DOMAIN = "casambi"
 
 WIRE_ID = 9

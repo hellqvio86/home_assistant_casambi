@@ -11,6 +11,8 @@ import aiocasambi
 import async_timeout
 
 from typing import Any, Dict, Optional
+from datetime import timedelta
+
 
 import voluptuous as vol
 
@@ -19,6 +21,13 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS,
     LightEntity,
 )
+
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
@@ -122,6 +131,16 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
 
+    coordinator = DataUpdateCoordinator(
+        hass,
+        _LOGGER,
+        # Name of the data. For logging purposes.
+        name="sensor",
+        update_method=controller.async_update_data,
+        # Polling interval. Will only be polled if there are subscribers.
+        update_interval=timedelta(seconds=60),
+    )
+
     return True
 
 
@@ -142,6 +161,10 @@ class CasambiController:
     @controller.setter
     def controller(self, controller):
         self._controller = controller
+
+    async def async_update_data(self):
+        ''' Function for polling network state (state of lights) '''
+        await self._controller.get_network_state()
 
     async def async_reconnect(self):
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
