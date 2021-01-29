@@ -136,7 +136,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         _LOGGER,
         # Name of the data. For logging purposes.
         name="sensor",
-        update_method=controller.async_update_data,
+        update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=60),
     )
