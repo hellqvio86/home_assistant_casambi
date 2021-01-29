@@ -164,6 +164,7 @@ class CasambiController:
 
     async def async_update_data(self):
         ''' Function for polling network state (state of lights) '''
+        _LOGGER.debug('async_update_data started')
         await self._controller.get_network_state()
 
     async def async_reconnect(self):
