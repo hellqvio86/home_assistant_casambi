@@ -141,6 +141,8 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         update_interval=timedelta(seconds=60),
     )
 
+    await coordinator.async_refresh()
+
     return True
 
 
