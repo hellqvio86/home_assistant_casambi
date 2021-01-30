@@ -191,6 +191,9 @@ class CasambiController:
             self._hass.loop.call_later(self._network_retry_timer,
                                        self.async_reconnect)
 
+    def update_unit_state(self, unit):
+        self.units[unit].update_state()
+
     def update_all_units(self):
         for key in self.units:
             self.units[key].update_state()
@@ -224,8 +227,9 @@ class CasambiController:
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
         elif signal == SIGNAL_UNIT_PULL_UPDATE:
-            # Update all units
-            self.update_all_units()
+            # Update units that is specified
+            for unit in data:
+                self.update_unit_state(unit)
 
 
 class CasambiLight(CoordinatorEntity, LightEntity):
