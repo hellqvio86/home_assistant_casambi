@@ -33,12 +33,13 @@ from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY
 
-from aiocasambi.websocket import (
+from aiocasambi.consts import (
     SIGNAL_DATA,
     STATE_RUNNING,
     SIGNAL_CONNECTION_STATE,
     STATE_DISCONNECTED,
     STATE_STOPPED,
+    SIGNAL_UNIT_PULL_UPDATE
 )
 
 import homeassistant.helpers.config_validation as cv
@@ -171,7 +172,11 @@ class CasambiController:
     async def async_update_data(self):
         ''' Function for polling network state (state of lights) '''
         _LOGGER.debug('async_update_data started')
-        await self._controller.get_network_state()
+        try:
+            await self._controller.get_network_state()
+        except aiocasambi.LoginRequired:
+            # Need to reconnect, session is invalid
+            await self.async_reconnect()
 
     async def async_reconnect(self):
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
@@ -185,6 +190,10 @@ class CasambiController:
             # Try again to reconnect
             self._hass.loop.call_later(self._network_retry_timer,
                                        self.async_reconnect)
+
+    def update_all_units(self):
+        for key in self.units:
+            self.units[key].update_state()
 
     def set_all_units_offline(self):
         for key in self.units:
@@ -214,6 +223,9 @@ class CasambiController:
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
+        elif signal == SIGNAL_UNIT_PULL_UPDATE:
+            # Update all units
+            self.update_all_units()
 
 
 class CasambiLight(CoordinatorEntity, LightEntity):
@@ -267,6 +279,11 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         _LOGGER.debug(f"set_online to {online} for unit {self}")
 
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            self.async_schedule_update_ha_state(True)
+
+    def update_state(self):
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
             self.async_schedule_update_ha_state(True)
