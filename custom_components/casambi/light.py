@@ -30,6 +30,7 @@ from homeassistant.helpers.update_coordinator import (
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import (
     CONF_EMAIL, 
