@@ -31,7 +31,11 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
-from homeassistant.const import CONF_EMAIL, CONF_API_KEY
+from homeassistant.const import (
+    CONF_EMAIL, 
+    CONF_API_KEY,
+    CONF_SCAN_INTERVAL,
+)
 
 from aiocasambi.consts import (
     SIGNAL_DATA,
@@ -53,7 +57,6 @@ from .const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
-    CONF_SCAN_INTERVAL,
 )
 
 CONFIG_SCHEMA = vol.Schema({
