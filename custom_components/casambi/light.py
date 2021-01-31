@@ -64,8 +64,8 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Required(CONF_NETWORK_PASSWORD): cv.string,
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
-        vol.Optional(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
-        vol.Optional(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
+        vol.Required(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
+        vol.Required(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
     })
 }, extra=vol.ALLOW_EXTRA)
 
