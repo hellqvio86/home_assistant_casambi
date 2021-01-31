@@ -53,6 +53,7 @@ from .const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
+    SCAN_INTERVAL,
 )
 
 CONFIG_SCHEMA = vol.Schema({
@@ -62,6 +63,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
         vol.Optional(CONF_NETWORK_TIMEOUT): cv.positive_int,
+        vol.Optional(SCAN_INTERVAL): cv.positive_int,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -77,9 +79,13 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
     api_key = config[CONF_API_KEY]
 
     network_timeout = 300
+    scan_interval = 60
 
     if CONF_NETWORK_TIMEOUT in config:
         network_timeout = config[CONF_NETWORK_TIMEOUT]
+
+    if SCAN_INTERVAL in config:
+        scan_interval = config[SCAN_INTERVAL]
 
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
@@ -133,7 +139,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         name="light",
         update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
-        update_interval=timedelta(seconds=60),
+        update_interval=timedelta(seconds=scan_interval),
     )
 
     await coordinator.async_refresh()

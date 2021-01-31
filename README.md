@@ -1,7 +1,7 @@
 # Home assistant Casambi Lights support
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hellqvio86/home_assistant_casambi) [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs) ![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/home_assistant_casambi) ![GitHub last commit](https://img.shields.io/github/last-commit/hellqvio86/aiocasambi) ![GitHub](https://img.shields.io/github/license/hellqvio86/home_assistant_casambi)
 
-Custom component to support Casambi Lights, all lights will be automatically discovered.
+Custom component to support Casambi Lights, all lights will be automatically discovered. State is sent to this plugin mainly by websocket, but this addon also polls Casambis REST API periodically.
 It uses a separate library (also written by me), link to library project:
 https://github.com/olofhellqvist/aiocasambi
 
@@ -43,6 +43,7 @@ light:
   platform: casambi
   ...
   network_timeout: 30    #default is 300 seconds
+  scan_interval: 60      #default is 60 seconds
 ```
 
 Of course you need to make sure you have the secrets available.
