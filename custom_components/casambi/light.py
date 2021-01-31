@@ -64,8 +64,8 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Required(CONF_NETWORK_PASSWORD): cv.string,
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
-        vol.Required(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
-        vol.Required(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
+        vol.Optional(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
+        vol.Optional(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -79,8 +79,15 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
-    network_timeout = config[CONF_NETWORK_TIMEOUT]
-    scan_interval = config[CONF_SCAN_INTERVAL]
+
+    network_timeout = 300
+    scan_interval = 60
+
+    if CONF_NETWORK_TIMEOUT in config:
+        network_timeout = config[CONF_NETWORK_TIMEOUT]
+
+    if CONF_SCAN_INTERVAL in config:
+        scan_interval = config[CONF_SCAN_INTERVAL]
 
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
