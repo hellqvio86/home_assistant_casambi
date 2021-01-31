@@ -25,15 +25,13 @@ from homeassistant.components.light import (
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
-    UpdateFailed,
 )
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
-from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import (
-    CONF_EMAIL, 
+    CONF_EMAIL,
     CONF_API_KEY,
     CONF_SCAN_INTERVAL,
 )
@@ -150,10 +148,10 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
 
     for unit in units:
         casambi_light = CasambiLight(coordinator,
-                            unit.unique_id,
-                            unit,
-                            controller,
-                            hass)
+                                     unit.unique_id,
+                                     unit,
+                                     controller,
+                                     hass)
         async_add_entities([casambi_light], True)
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
