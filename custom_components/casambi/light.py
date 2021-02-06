@@ -200,11 +200,9 @@ class CasambiController:
                                        self.async_reconnect)
 
     def update_unit_state(self, unit):
-        try:
+        _LOGGER.debug(f"update_unit_state: unit: {unit} units: {self.units}")
+        if unit in self.units:
             self.units[unit].update_state()
-        except KeyError as err:
-            _LOGGER.debug(f"update_unit_state: units: {self.units}")
-            raise err
 
     def update_all_units(self):
         for key in self.units:
