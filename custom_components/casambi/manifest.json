@@ -6,7 +6,7 @@
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
   "issue_tracker": "https://github.com/hellqvio86/home_assistant_casambi/issues",
   "requirements": [
-    "aiocasambi==0.170"
+    "aiocasambi==0.171"
   ],
   "ssdp": [],
   "zeroconf": [],
