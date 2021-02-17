@@ -185,8 +185,6 @@ class CasambiController:
         except aiocasambi.LoginRequired:
             # Need to reconnect, session is invalid
             await self.async_reconnect()
-        
-        await self._controller.wake_up_units()
 
     async def async_reconnect(self):
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
