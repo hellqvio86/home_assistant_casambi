@@ -291,7 +291,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     def set_online(self, online):
         self.unit.online = online
 
-        _LOGGER.debug(f"set_online to {online} for unit {self}")
+        _LOGGER.debug(f"set_online: Setting online to \"{online}\" for unit {self}")
 
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
@@ -304,7 +304,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
     def process_update(self, data):
         """Process callback message, update home assistant light state"""
-        _LOGGER.debug(f"process_update self: {self} data: {data}")
+        _LOGGER.debug(f"process_update: self: {self} data: {data}")
 
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
@@ -340,10 +340,11 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             self._brightness = int(round(self.unit.value * 255))
         else:
             self._state = False
+
         _LOGGER.debug(f"async_update {self}")
 
         if not self.unit.online:
-            _LOGGER.error(f"unit is not online: {self}")
+            _LOGGER.info(f"async_update: unit is not online: {self}")
 
     @property
     def device_info(self) -> Dict[str, Any]:
