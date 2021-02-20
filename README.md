@@ -62,7 +62,7 @@ logger:
 ```
 
 ### Todo list
-Links to what needs to be done next: https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ , https://developers.home-assistant.io/docs/creating_platform_code_review/.
+Links to what needs to be done next: https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ and https://developers.home-assistant.io/docs/creating_platform_code_review/ .
 
 ## Other Casambi projects
 * https://github.com/hellqvio86/aiocasambi - The Asynchronous I/O Casambi library that this project uses
