@@ -19,14 +19,19 @@ https://github.com/olofhellqvist/aiocasambi
 Just place the directory "casambi" in to your 'custom_components' folder.
 
 #### Installation via HACS
+1. Setup HACS https://hacs.xyz/
+2. HACS -> Integrations -> Casambi -> Install
+
+#### Installation via HACS (custom repository)
 Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories):
 
-1. Go to integrations section.
-2. Click on the 3 dots in the top right corner.
-3. Select "Custom repositories"
-4. Add the URL to the repository.
-5. Select the correct category.
-6. Click the "ADD" button.
+1. Setup HACS https://hacs.xyz/
+2. Go to integrations section.
+3. Click on the 3 dots in the top right corner.
+4. Select "Custom repositories"
+5. Add the URL to the repository.
+6. Select the correct category.
+7. Click the "ADD" button.
 
 ### Configuration
 Add these lines in your configuration.yml
