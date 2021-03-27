@@ -11,6 +11,7 @@ https://github.com/olofhellqvist/aiocasambi
 ### Prerequisite
 * Running [Home Assistant](https://www.home-assistant.io/)
 * Request developer api key from Casambi: https://developer.casambi.com/
+* Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
 * Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
 
 ### Installation
