@@ -24,3 +24,6 @@ class LoginRequired(CasambiException):
 
 class UserLevel(CasambiException):
     """User level too low."""
+
+class InvalidCredentials(CasambiException):
+    """User invalid credentials."""
