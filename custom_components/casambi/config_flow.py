@@ -1,13 +1,22 @@
 import logging
+import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 
-from typing import Any, Dict, Optional
 
 from aiocasambi import helper
 from aiocasambi.errors import AiocasambiException
 from homeassistant import config_entries
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_API_KEY,
+    CONF_SCAN_INTERVAL
+)
+
 from .const import (
-    CONFIG_SCHEMA,
-    DOMAIN
+    DOMAIN,
+    CONF_USER_PASSWORD,
+    CONF_NETWORK_PASSWORD,
+    CONF_NETWORK_TIMEOUT
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,5 +51,14 @@ class CasambiFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             pass  # TODO: process info
 
         return self.async_show_form(
-            step_id="user", data_schema=CONFIG_SCHEMA
+            step_id="user", data_schema=vol.Schema({
+                DOMAIN: vol.Schema({
+                    vol.Required(CONF_USER_PASSWORD): cv.string,
+                    vol.Required(CONF_NETWORK_PASSWORD): cv.string,
+                    vol.Required(CONF_EMAIL): cv.string,
+                    vol.Required(CONF_API_KEY): cv.string,
+                    vol.Required(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
+                    vol.Required(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
+                })
+            }, extra=vol.ALLOW_EXTRA)
         )
