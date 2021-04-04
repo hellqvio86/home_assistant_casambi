@@ -33,8 +33,7 @@ from homeassistant.helpers import aiohttp_client
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
-    CONF_SCAN_INTERVAL,
-    CONFIG_SCHEMA
+    CONF_SCAN_INTERVAL
 )
 
 from aiocasambi.consts import (
@@ -51,6 +50,7 @@ import homeassistant.helpers.config_validation as cv
 from .const import (
     DOMAIN,
     WIRE_ID,
+    CONFIG_SCHEMA,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
     CONF_NETWORK_TIMEOUT,
