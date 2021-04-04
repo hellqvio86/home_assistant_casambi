@@ -1,4 +1,6 @@
 """Constants for the casambi integration."""
+import voluptuous as vol
+
 DOMAIN = "casambi"
 
 WIRE_ID = 9
