@@ -2,6 +2,11 @@
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_API_KEY
+    )
+
 DOMAIN = "casambi"
 
 WIRE_ID = 9
