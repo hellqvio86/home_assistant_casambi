@@ -5,7 +5,7 @@ import homeassistant.helpers.config_validation as cv
 
 from aiocasambi import helper
 from aiocasambi.errors import AiocasambiException
-from homeassistant import config_entries
+from homeassistant import config_entries, core
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
