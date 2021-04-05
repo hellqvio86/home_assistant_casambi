@@ -89,7 +89,7 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 # Input is valid, set data.
                 self.data = user_input
-                self.data[CONF_REPOS] = []
+
                 # Return the form of the next step.
                 return self.async_create_entry(title="Casambi", data=self.data)
 
