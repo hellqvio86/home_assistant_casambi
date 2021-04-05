@@ -1,81 +1,192 @@
+from copy import deepcopy
 import logging
-import voluptuous as vol
-import homeassistant.helpers.config_validation as cv
-
 from typing import Any, Dict, Optional
-from aiocasambi import helper
-from aiocasambi.errors import AiocasambiException
-from homeassistant import config_entries, core
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_API_KEY,
-    CONF_SCAN_INTERVAL
-)
 
-from .const import (
-    DOMAIN,
-    CONF_USER_PASSWORD,
-    CONF_NETWORK_PASSWORD,
-    CONF_NETWORK_TIMEOUT
+from homeassistant import config_entries, core
+from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH, CONF_URL
+from homeassistant.core import callback
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.entity_registry import (
+    async_entries_for_config_entry,
+    async_get_registry,
 )
+import voluptuous as vol
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.Schema({
-        vol.Required(CONF_USER_PASSWORD): cv.string,
-        vol.Required(CONF_NETWORK_PASSWORD): cv.string,
-        vol.Required(CONF_EMAIL): cv.string,
-        vol.Required(CONF_API_KEY): cv.string,
-        vol.Required(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
-        vol.Required(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
-    })
-}, extra=vol.ALLOW_EXTRA)
+CONF_REPOS = 'foobar'
+AUTH_SCHEMA = vol.Schema(
+    {vol.Required(CONF_ACCESS_TOKEN): cv.string, vol.Optional(CONF_URL): cv.string}
+)
+REPO_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_PATH): cv.string,
+        vol.Optional(CONF_NAME): cv.string,
+        vol.Optional("add_another"): cv.boolean,
+    }
+)
+
+OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
 
-async def validate_auth(email: str, api_key: str, user_password: str,
-                        network_password: str, hass: core.HomeAssistant) -> None:
-    """ Validates a Casambi credentials.
+async def validate_path(path: str, access_token: str, hass: core.HassJob) -> None:
+    """Validates a GitHub repo path.
 
-    Raises a if credentials is invalid
+    Raises a ValueError if the path is invalid.
     """
-    worker = helper.Helper(email=email, api_key=api_key)
-
-    try:
-        await worker.test_user_password(password=user_password)
-    except AiocasambiException:
+    if len(path.split("/")) != 2:
         raise ValueError
-
-    try:
-        await worker.test_network_password(password=network_password)
-    except AiocasambiException:
-        raise ValueError
+    session = async_get_clientsession(hass)
 
 
-class CasambiFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle Casambi config flow"""
+async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
+    """Validates a GitHub access token.
 
-    VERSION = 1
+    Raises a ValueError if the auth token is invalid.
+    """
+    session = async_get_clientsession(hass)
+
+
+class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Github Custom config flow."""
 
     data: Optional[Dict[str, Any]]
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
+        """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
-
         if user_input is not None:
             try:
-                await validate_auth(user_input[CONF_EMAIL],
-                                    user_input[CONF_API_KEY],
-                                    user_input[CONF_USER_PASSWORD],
-                                    user_input[CONF_NETWORK_PASSWORD],
-                                    self.hass)
+                await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
             except ValueError:
                 errors["base"] = "auth"
             if not errors:
                 # Input is valid, set data.
                 self.data = user_input
+                self.data[CONF_REPOS] = []
+                # Return the form of the next step.
+                return await self.async_step_repo()
 
-                # User is done create the config entry.
-                return self.async_create_entry(title="Casambi", data=self.data)
         return self.async_show_form(
-            step_id="user", data_schema=CONFIG_SCHEMA)
+            step_id="user", data_schema=AUTH_SCHEMA, errors=errors
+        )
+
+    async def async_step_repo(self, user_input: Optional[Dict[str, Any]] = None):
+        """Second step in config flow to add a repo to watch."""
+        errors: Dict[str, str] = {}
+        if user_input is not None:
+            # Validate the path.
+            try:
+                await validate_path(
+                    user_input[CONF_PATH], self.data[CONF_ACCESS_TOKEN], self.hass
+                )
+            except ValueError:
+                errors["base"] = "invalid_path"
+
+            if not errors:
+                # Input is valid, set data.
+                self.data[CONF_REPOS].append(
+                    {
+                        "path": user_input[CONF_PATH],
+                        "name": user_input.get(CONF_NAME, user_input[CONF_PATH]),
+                    }
+                )
+                # If user ticked the box show this form again so they can add an
+                # additional repo.
+                if user_input.get("add_another", False):
+                    return await self.async_step_repo()
+
+                # User is done adding repos, create the config entry.
+                return self.async_create_entry(title="GitHub Custom", data=self.data)
+
+        return self.async_show_form(
+            step_id="repo", data_schema=REPO_SCHEMA, errors=errors
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handles options flow for the component."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Manage the options for the custom component."""
+        errors: Dict[str, str] = {}
+        # Grab all configured repos from the entity registry so we can populate the
+        # multi-select dropdown that will allow a user to remove a repo.
+        entity_registry = await async_get_registry(self.hass)
+        entries = async_entries_for_config_entry(
+            entity_registry, self.config_entry.entry_id
+        )
+        # Default value for our multi-select.
+        all_repos = {e.entity_id: e.original_name for e in entries}
+        repo_map = {e.entity_id: e for e in entries}
+
+        if user_input is not None:
+            updated_repos = deepcopy(self.config_entry.data[CONF_REPOS])
+
+            # Remove any unchecked repos.
+            removed_entities = [
+                entity_id
+                for entity_id in repo_map.keys()
+                if entity_id not in user_input["repos"]
+            ]
+            for entity_id in removed_entities:
+                # Unregister from HA
+                entity_registry.async_remove(entity_id)
+                # Remove from our configured repos.
+                entry = repo_map[entity_id]
+                entry_path = entry.unique_id
+                updated_repos = [e for e in updated_repos if e["path"] != entry_path]
+
+            if user_input.get(CONF_PATH):
+                # Validate the path.
+                access_token = self.hass.data[DOMAIN][self.config_entry.entry_id][
+                    CONF_ACCESS_TOKEN
+                ]
+                try:
+                    await validate_path(user_input[CONF_PATH], access_token, self.hass)
+                except ValueError:
+                    errors["base"] = "invalid_path"
+
+                if not errors:
+                    # Add the new repo.
+                    updated_repos.append(
+                        {
+                            "path": user_input[CONF_PATH],
+                            "name": user_input.get(CONF_NAME, user_input[CONF_PATH]),
+                        }
+                    )
+
+            if not errors:
+                # Value of data will be set on the options property of our config_entry
+                # instance.
+                return self.async_create_entry(
+                    title="",
+                    data={CONF_REPOS: updated_repos},
+                )
+
+        options_schema = vol.Schema(
+            {
+                vol.Optional("repos", default=list(all_repos.keys())): cv.multi_select(
+                    all_repos
+                ),
+                vol.Optional(CONF_PATH): cv.string,
+                vol.Optional(CONF_NAME): cv.string,
+            }
+        )
+        return self.async_show_form(
+            step_id="init", data_schema=options_schema, errors=errors
+        )
