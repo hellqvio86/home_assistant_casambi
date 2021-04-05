@@ -75,7 +75,7 @@ class CasambiFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 # Input is valid, set data.
                 self.data = user_input
 
-                # User is done adding repos, create the config entry.
+                # User is done create the config entry.
                 return self.async_create_entry(title="Casambi", data=self.data)
         return self.async_show_form(
             step_id="user", data_schema=CONFIG_SCHEMA)
