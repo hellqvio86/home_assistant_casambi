@@ -37,7 +37,12 @@ _LOGGER = logging.getLogger(__name__)
 
 CONF_REPOS = 'FOOBAR'
 AUTH_SCHEMA = vol.Schema(
-    {vol.Required(CONF_ACCESS_TOKEN): cv.string, vol.Optional(CONF_URL): cv.string}
+    {
+        vol.Required(CONF_EMAIL): cv.string,
+        vol.Required(CONF_API_KEY): cv.string,
+        vol.Required(CONF_USER_PASSWORD): cv.string,
+        vol.Required(CONF_NETWORK_PASSWORD): cv.string
+    }
 )
 REPO_SCHEMA = vol.Schema(
     {
