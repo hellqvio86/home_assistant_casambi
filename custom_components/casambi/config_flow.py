@@ -3,7 +3,15 @@ import logging
 from typing import Any, Dict, Optional
 
 from homeassistant import config_entries, core
-from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH, CONF_URL
+from homeassistant.const import (
+    CONF_ACCESS_TOKEN,
+    CONF_NAME,
+    CONF_EMAIL,
+    CONF_API_KEY,
+    CONF_PATH,
+    CONF_URL,
+    CONF_SCAN_INTERVAL
+)
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -13,17 +21,27 @@ from homeassistant.helpers.entity_registry import (
 )
 import voluptuous as vol
 
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    WIRE_ID,
+    CONFIG_SCHEMA,
+    CONF_USER_PASSWORD,
+    CONF_NETWORK_PASSWORD,
+    CONF_NETWORK_TIMEOUT,
+    ATTR_IDENTIFIERS,
+    ATTR_MANUFACTURER,
+    ATTR_MODEL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_REPOS = 'foobar'
+CONF_REPOS = 'FOOBAR'
 AUTH_SCHEMA = vol.Schema(
     {vol.Required(CONF_ACCESS_TOKEN): cv.string, vol.Optional(CONF_URL): cv.string}
 )
 REPO_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_PATH): cv.string,
+        vol.Required(CONF_USER_PASSWORD): cv.string,
         vol.Optional(CONF_NAME): cv.string,
         vol.Optional("add_another"): cv.boolean,
     }
