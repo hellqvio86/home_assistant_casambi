@@ -6,17 +6,18 @@
         "title": "Fill in your information",
         "description": "Enter your Casambi credentials.",
         "data": {
-          "email": "email",
-          "user_password": "user_password",
-          "network_password": "network_password",
-          "api_key": "api_key",
-          "network_timeout": "network_timeout",
-          "scan_interval": "scan_interval"
+          "email": "Email",
+          "user_password": "User password",
+          "network_password": "Network password",
+          "api_key": "api key",
+          "network_timeout": "Network timeout",
+          "scan_interval": "Scan interval"
         }
       }
     },
     "error": {
-      "auth":"Invalid credentials"
+      "auth_user_password":"Invalid user password",
+      "auth_network_password":"Invalid network password"
     }
   }
 }

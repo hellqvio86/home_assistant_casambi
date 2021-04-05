@@ -6,25 +6,18 @@
         "title": "Fill in your information",
         "description": "Enter your Casambi credentials.",
         "data": {
-          "email": "email",
-          "user_password": "user_password",
-          "network_password": "network_password",
-          "api_key": "api_key",
-          "network_timeout": "network_timeout",
-          "scan_interval": "scan_interval"
+          "email": "Email",
+          "user_password": "User password",
+          "network_password": "Network password",
+          "api_key": "api key",
+          "network_timeout": "Network timeout",
+          "scan_interval": "Scan interval"
         }
       }
     },
     "error": {
-      "auth":"Invalid credentials"
-    },
-    "abort": {
-      "discover_timeout": "Unable to discover Hue bridges",
-      "no_bridges": "No Philips Hue bridges discovered",
-      "all_configured": "All Philips Hue bridges are already configured",
-      "unknown": "Unknown error occurred",
-      "cannot_connect": "Unable to connect to the bridge",
-      "already_configured": "Bridge is already configured"
+      "auth_user_password":"Invalid user password",
+      "auth_network_password":"Invalid network password"
     }
   }
 }
