@@ -6,7 +6,7 @@ from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
     CONF_SCAN_INTERVAL
-    )
+)
 
 DOMAIN = "casambi"
 
