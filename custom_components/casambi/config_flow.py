@@ -66,7 +66,7 @@ async def validate_user_password(email: str, api_key: str, user_password: str,
     helper = Helper(email=email, api_key=api_key, websession=session)
 
     try:
-        await helper.test_user_password(user_password)
+        await helper.test_user_password(password=user_password)
     except AiocasambiException:
         raise ValueError
 
@@ -80,7 +80,7 @@ async def validate_network_password(email: str, api_key: str,
     helper = Helper(email=email, api_key=api_key, websession=session)
 
     try:
-        await helper.test_network_password(network_password)
+        await helper.test_network_password(password=network_password)
     except AiocasambiException:
         raise ValueError
 
