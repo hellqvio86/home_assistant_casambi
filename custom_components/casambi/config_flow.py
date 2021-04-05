@@ -54,18 +54,8 @@ REPO_SCHEMA = vol.Schema(
 
 OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
-
-async def validate_path(path: str, access_token: str, hass: core.HassJob) -> None:
-    """Validates a GitHub repo path.
-
-    Raises a ValueError if the path is invalid.
-    """
-    if len(path.split("/")) != 2:
-        raise ValueError
-    session = async_get_clientsession(hass)
-
-
-async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
+async def validate_auth(email: str, api_key: str, user_password: str, 
+    network_password: str, hass: core.HomeAssistant) -> None:
     """Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
@@ -84,7 +74,7 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             _LOGGER.debug(f"async_step_user user_input: {user_input}")
             try:
-                await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
+                await validate_auth(user_input[CONF_EMAIL], user_input[CONF_API_KEY], user_input[CONF_USER_PASSWORD], user_input[CONF_NETWORK_PASSWORD], self.hass)
             except ValueError:
                 errors["base"] = "auth"
             if not errors:
