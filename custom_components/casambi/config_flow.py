@@ -73,7 +73,7 @@ async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
     session = async_get_clientsession(hass)
 
 
-class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Github Custom config flow."""
 
     data: Optional[Dict[str, Any]]
@@ -82,6 +82,7 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
+            _LOGGER.debug(f"async_step_user user_input: {user_input}")
             try:
                 await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
             except ValueError:
