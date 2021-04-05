@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_URL,
     CONF_SCAN_INTERVAL
 )
+from aiocasambi.helper import Helper
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -61,6 +62,7 @@ async def validate_auth(email: str, api_key: str, user_password: str,
     Raises a ValueError if the auth token is invalid.
     """
     session = async_get_clientsession(hass)
+    helper = Helper(email=email, api_key=api_key, websession=session)
 
 
 class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
