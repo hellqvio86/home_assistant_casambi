@@ -30,7 +30,7 @@ CONFIG_SCHEMA = vol.Schema({
                     vol.Required(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
                     vol.Required(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
                 })
-            }, extra=vol.ALLOW_EXTRA))
+            }, extra=vol.ALLOW_EXTRA)
 
 
 async def validate_auth(email: str, api_key: str, user_password: str, \
