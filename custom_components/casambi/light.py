@@ -13,9 +13,6 @@ import async_timeout
 from typing import Any, Dict, Optional
 from datetime import timedelta
 
-
-import voluptuous as vol
-
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     SUPPORT_BRIGHTNESS,
@@ -45,8 +42,6 @@ from aiocasambi.consts import (
     STATE_STOPPED,
     SIGNAL_UNIT_PULL_UPDATE
 )
-
-import homeassistant.helpers.config_validation as cv
 
 from .const import (
     DOMAIN,

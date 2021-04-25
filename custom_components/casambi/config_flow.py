@@ -37,7 +37,6 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_REPOS = 'FOOBAR'
 AUTH_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): cv.string,
@@ -56,6 +55,7 @@ REPO_SCHEMA = vol.Schema(
 
 OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
+
 async def validate_user_password(email: str, api_key: str, user_password: str, 
     hass: core.HomeAssistant) -> None:
     """Validates a GitHub access token.
@@ -70,6 +70,7 @@ async def validate_user_password(email: str, api_key: str, user_password: str,
     except AiocasambiException:
         raise ValueError
 
+
 async def validate_network_password(email: str, api_key: str,
     network_password: str, hass: core.HomeAssistant) -> None:
     """Validates a GitHub access token.
@@ -83,6 +84,7 @@ async def validate_network_password(email: str, api_key: str,
         await helper.test_network_password(password=network_password)
     except AiocasambiException:
         raise ValueError
+
 
 class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Github Custom config flow."""
@@ -103,7 +105,7 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await validate_network_password(user_input[CONF_EMAIL], user_input[CONF_API_KEY], user_input[CONF_NETWORK_PASSWORD], self.hass)
             except ValueError:
                 errors["base"] = "auth_network_password"
-            
+
             if not errors:
                 # Input is valid, set data.
                 self.data = user_input
