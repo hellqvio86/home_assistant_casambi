@@ -64,6 +64,8 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+CASAMBI_CONTROLLER = None
+
 
 async def async_setup_entry(
     hass: core.HomeAssistant,
@@ -89,7 +91,10 @@ async def async_setup_entry(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    casambi_controller = CasambiController(hass)
+    if CASAMBI_CONTROLLER:
+        return
+
+    CASAMBI_CONTROLLER = CasambiController(hass)
 
     controller = aiocasambi.Controller(
         email=email,
@@ -99,11 +104,11 @@ async def async_setup_entry(
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=casambi_controller.signalling_callback,
+        callback=CASAMBI_CONTROLLER.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    CASAMBI_CONTROLLER.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -136,7 +141,7 @@ async def async_setup_entry(
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=casambi_controller.async_update_data,
+        update_method=CASAMBI_CONTROLLER.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -151,7 +156,7 @@ async def async_setup_entry(
                                      hass)
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -176,7 +181,10 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    casambi_controller = CasambiController(hass)
+    if CASAMBI_CONTROLLER:
+        return
+
+    CASAMBI_CONTROLLER = CasambiController(hass)
 
     controller = aiocasambi.Controller(
         email=email,
@@ -186,11 +194,11 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=casambi_controller.signalling_callback,
+        callback=CASAMBI_CONTROLLER.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    CASAMBI_CONTROLLER.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -223,7 +231,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=casambi_controller.async_update_data,
+        update_method=CASAMBI_CONTROLLER.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -238,7 +246,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
                                      hass)
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -324,6 +332,22 @@ class CasambiController:
             # Update units that is specified
             for unit in data:
                 self.update_unit_state(unit)
+
+
+
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Import Miio configuration from YAML."""
+    _LOGGER.warning(
+        "Loading Xiaomi Miio Light via platform setup is deprecated. "
+        "Please remove it from your configuration"
+    )
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": SOURCE_IMPORT},
+            data=config,
+        )
+    )
 
 
 class CasambiLight(CoordinatorEntity, LightEntity):
