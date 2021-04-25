@@ -338,22 +338,6 @@ class CasambiController:
                 self.update_unit_state(unit)
 
 
-
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Import Miio configuration from YAML."""
-    _LOGGER.warning(
-        "Loading Xiaomi Miio Light via platform setup is deprecated. "
-        "Please remove it from your configuration"
-    )
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": SOURCE_IMPORT},
-            data=config,
-        )
-    )
-
-
 class CasambiLight(CoordinatorEntity, LightEntity):
     """Defines a Casambi Key Light."""
 
