@@ -91,6 +91,8 @@ async def async_setup_entry(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
+    global CASAMBI_CONTROLLER
+
     if CASAMBI_CONTROLLER:
         return
 
@@ -180,6 +182,8 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
 
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
+
+    global CASAMBI_CONTROLLER
 
     if CASAMBI_CONTROLLER:
         return
