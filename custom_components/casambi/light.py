@@ -13,9 +13,6 @@ import async_timeout
 from typing import Any, Dict, Optional
 from datetime import timedelta
 
-
-import voluptuous as vol
-
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     SUPPORT_BRIGHTNESS,
@@ -27,13 +24,14 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
+from homeassistant import config_entries, core
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
-    CONF_SCAN_INTERVAL,
+    CONF_SCAN_INTERVAL
 )
 
 from aiocasambi.consts import (
@@ -45,43 +43,39 @@ from aiocasambi.consts import (
     SIGNAL_UNIT_PULL_UPDATE
 )
 
-import homeassistant.helpers.config_validation as cv
-
 from .const import (
     DOMAIN,
     WIRE_ID,
+    CONFIG_SCHEMA,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
     CONF_NETWORK_TIMEOUT,
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
+    DEFAULT_NETWORK_TIMEOUT,
+    DEFAULT_POLLING_TIME
 )
-
-CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.Schema({
-        vol.Required(CONF_USER_PASSWORD): cv.string,
-        vol.Required(CONF_NETWORK_PASSWORD): cv.string,
-        vol.Required(CONF_EMAIL): cv.string,
-        vol.Required(CONF_API_KEY): cv.string,
-        vol.Optional(CONF_NETWORK_TIMEOUT, default=300): cv.positive_int,
-        vol.Optional(CONF_SCAN_INTERVAL, default=60): cv.positive_int,
-    })
-}, extra=vol.ALLOW_EXTRA)
 
 _LOGGER = logging.getLogger(__name__)
 
+CASAMBI_CONTROLLER = None
 
-async def async_setup_platform(hass: HomeAssistant, config: dict,
-                               async_add_entities, discovery_info=None):
 
+async def async_setup_entry(
+    hass: core.HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
+):
+    """Setup sensors from a config entry created in the integrations UI."""
+    config = hass.data[DOMAIN][config_entry.entry_id]
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
 
-    network_timeout = 300
-    scan_interval = 60
+    network_timeout = DEFAULT_NETWORK_TIMEOUT
+    scan_interval = DEFAULT_POLLING_TIME
 
     if CONF_NETWORK_TIMEOUT in config:
         network_timeout = config[CONF_NETWORK_TIMEOUT]
@@ -92,7 +86,12 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    casambi_controller = CasambiController(hass)
+    global CASAMBI_CONTROLLER
+
+    if CASAMBI_CONTROLLER:
+        return
+
+    CASAMBI_CONTROLLER = CasambiController(hass)
 
     controller = aiocasambi.Controller(
         email=email,
@@ -102,11 +101,11 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=casambi_controller.signalling_callback,
+        callback=CASAMBI_CONTROLLER.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    CASAMBI_CONTROLLER.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -139,7 +138,7 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=casambi_controller.async_update_data,
+        update_method=CASAMBI_CONTROLLER.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -154,7 +153,99 @@ async def async_setup_platform(hass: HomeAssistant, config: dict,
                                      hass)
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
+
+    return True
+
+
+async def async_setup_platform(hass: HomeAssistant, config: dict,
+                               async_add_entities, discovery_info=None):
+
+    user_password = config[CONF_USER_PASSWORD]
+    network_password = config[CONF_NETWORK_PASSWORD]
+    email = config[CONF_EMAIL]
+    api_key = config[CONF_API_KEY]
+
+    network_timeout = DEFAULT_NETWORK_TIMEOUT
+    scan_interval = DEFAULT_POLLING_TIME
+
+    if CONF_NETWORK_TIMEOUT in config:
+        network_timeout = config[CONF_NETWORK_TIMEOUT]
+
+    if CONF_SCAN_INTERVAL in config:
+        scan_interval = config[CONF_SCAN_INTERVAL]
+
+    sslcontext = ssl.create_default_context()
+    session = aiohttp_client.async_get_clientsession(hass)
+
+    global CASAMBI_CONTROLLER
+
+    if CASAMBI_CONTROLLER:
+        return
+
+    CASAMBI_CONTROLLER = CasambiController(hass)
+
+    controller = aiocasambi.Controller(
+        email=email,
+        user_password=user_password,
+        network_password=network_password,
+        api_key=api_key,
+        websession=session,
+        sslcontext=sslcontext,
+        wire_id=WIRE_ID,
+        callback=CASAMBI_CONTROLLER.signalling_callback,
+        network_timeout=network_timeout,
+    )
+
+    CASAMBI_CONTROLLER.controller = controller
+
+    try:
+        with async_timeout.timeout(10):
+            await controller.create_user_session()
+            await controller.create_network_session()
+            await controller.start_websocket()
+
+    except aiocasambi.LoginRequired:
+        _LOGGER.error("Connected to casambi but couldn't log in")
+        return False
+
+    except aiocasambi.Unauthorized:
+        _LOGGER.error("Connected to casambi but not registered")
+        return False
+
+    except (asyncio.TimeoutError, aiocasambi.RequestError):
+        _LOGGER.error('Error connecting to the Casambi')
+        return False
+
+    except aiocasambi.AiocasambiException:
+        _LOGGER.error('Unknown Casambi communication error occurred')
+        return False
+
+    await controller.initialize()
+
+    units = controller.get_units()
+
+    coordinator = DataUpdateCoordinator(
+        hass,
+        _LOGGER,
+        # Name of the data. For logging purposes.
+        name="light",
+        update_method=CASAMBI_CONTROLLER.async_update_data,
+        # Polling interval. Will only be polled if there are subscribers.
+        update_interval=timedelta(seconds=scan_interval),
+    )
+
+    await coordinator.async_refresh()
+
+    for unit in units:
+        casambi_light = CasambiLight(coordinator,
+                                     unit.unique_id,
+                                     unit,
+                                     controller,
+                                     hass)
+        async_add_entities([casambi_light], True)
+
+        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
 
     return True
 
