@@ -309,7 +309,9 @@ class CasambiController:
 
         if signal == SIGNAL_DATA:
             for key, value in data.items():
-                self.units[key].process_update(value)
+                unit = self.units.get(key)
+                if unit:
+                    self.units[key].process_update(value)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
