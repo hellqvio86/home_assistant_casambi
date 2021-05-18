@@ -17,6 +17,10 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     SUPPORT_BRIGHTNESS,
     LightEntity,
+    ATTR_BRIGHTNESS,
+    ATTR_COLOR_TEMP,
+    COLOR_MODE_BRIGHTNESS,
+    COLOR_MODE_COLOR_TEMP,
 )
 
 from homeassistant.helpers.update_coordinator import (
@@ -377,6 +381,16 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     def supported_features(self) -> int:
         """Flag supported features."""
         return SUPPORT_BRIGHTNESS
+
+    @property
+    def color_mode(self):
+        """Set color mode for this entity."""
+        return COLOR_MODE_BRIGHTNESS
+
+    @property
+    def supported_color_modes(self):
+        """Flag supported color_modes (in an array format)."""
+        return [COLOR_MODE_BRIGHTNESS]
 
     @property
     def is_on(self) -> bool:
