@@ -1,1 +1,1 @@
-aiocasambi==0.193
+aiocasambi==0.194
