@@ -487,7 +487,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the light."""
-        _LOGGER.debug(f"async_turn_on {self} kwargs: {kwargs}")
+        _LOGGER.debug(
+            f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
 
         if ATTR_BRIGHTNESS in kwargs:
