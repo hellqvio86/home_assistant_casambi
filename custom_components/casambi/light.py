@@ -317,7 +317,9 @@ class CasambiController:
                 if unit:
                     self.units[key].process_update(value)
                 else:
-                    _LOGGER.error(f"signalling_callback unit is null! signal: {signal} data: {data}")
+                    error_msg = 'signalling_callback unit is null!'
+                    error_msg += f"signal: {signal} data: {data}"
+                    _LOGGER.error(error_msg)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
@@ -379,7 +381,11 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
     @property
     def supported_features(self) -> int:
-        """Flag supported features."""
+        """
+        Flag supported features.
+
+        This is deprecated and will be removed in Home Assistant 2021.10.
+        """
         return SUPPORT_BRIGHTNESS
 
     @property
@@ -400,7 +406,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     def set_online(self, online):
         self.unit.online = online
 
-        _LOGGER.debug(f"set_online: Setting online to \"{online}\" for unit {self}")
+        dbg_msg = 'set_online: Setting online to '
+        dbg_msg += f"\"{online}\" for unit {self}"
+        _LOGGER.debug(dbg_msg)
 
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
