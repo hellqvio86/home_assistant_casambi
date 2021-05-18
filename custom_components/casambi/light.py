@@ -17,7 +17,6 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     SUPPORT_BRIGHTNESS,
     LightEntity,
-    ATTR_BRIGHTNESS,
     ATTR_COLOR_TEMP,
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
@@ -418,7 +417,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return self.unit.get_max_mired()
 
     @property
-    def color_temp(self) -> int | None:
+    def color_temp(self) -> int:
         """Return the CT color value in mireds."""
         return self.unit.get_color_temp()
 
