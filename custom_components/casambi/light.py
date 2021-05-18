@@ -490,17 +490,25 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         _LOGGER.debug(
             f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
+        color_temp = None
 
         if ATTR_COLOR_TEMP in kwargs:
             _LOGGER.debug(f"ATTR_COLOR_TEMP: {kwargs[ATTR_COLOR_TEMP]}")
+            color_temp = kwargs[ATTR_COLOR_TEMP]
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
 
-        if brightness == 255:
-            await self.unit.turn_unit_on()
+        if not color_temp:
+            if brightness == 255:
+                await self.unit.turn_unit_on()
+            else:
+                await self.unit.set_unit_value(value=brightness)
         else:
-            await self.unit.set_unit_value(value=brightness)
+            await self.unit.set_unit_color_temperature(
+                color_temp,
+                source='mired'
+            )
 
     @property
     def should_poll(self):
