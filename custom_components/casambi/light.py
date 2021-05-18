@@ -388,7 +388,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         25000 K, has a mired value of M = 40 mireds
         1000000 / 25000 = 40
         """
-        return self.unit.get_max_mired()
+        return self.unit.get_min_mired()
 
     @property
     def max_mireds(self) -> int:
