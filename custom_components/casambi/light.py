@@ -380,6 +380,49 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return self._brightness
 
     @property
+    def min_mireds(self) -> int:
+        """
+        Return the coldest color_temp that this light supports.
+
+        M = 1000000 / T
+
+        25000 K, has a mired value of M = 40 mireds
+        1000000 / 25000 = 40
+        """
+        return self.unit.get_max_mired()
+
+    @property
+    def max_mireds(self) -> int:
+        """
+        Return the warmest color_temp that this light supports.
+
+        M = 1000000 / T
+
+        25000 K, has a mired value of M = 40 mireds
+        1000000 / 25000 = 40
+
+        {
+            'Dimmer': {
+                'type': 'Dimmer',
+                'value': 0.0
+                },
+            'CCT': {
+                'min': 2200,
+                'max': 6000,
+                'level': 0.4631578947368421,
+                'type': 'CCT',
+                'value': 3960.0
+                }
+        }
+        """
+        return self.unit.get_max_mired()
+
+    @property
+    def color_temp(self) -> int | None:
+        """Return the CT color value in mireds."""
+        return self.unit.get_color_temp()
+
+    @property
     def supported_features(self) -> int:
         """
         Flag supported features.
@@ -391,12 +434,23 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     @property
     def color_mode(self):
         """Set color mode for this entity."""
-        return COLOR_MODE_BRIGHTNESS
+        if self.unit.supports_color_temperature():
+            return COLOR_MODE_COLOR_TEMP
+        if self.unit.supports_brightness():
+            return COLOR_MODE_BRIGHTNESS
 
     @property
     def supported_color_modes(self):
         """Flag supported color_modes (in an array format)."""
-        return [COLOR_MODE_BRIGHTNESS]
+        supports = []
+
+        if self.unit.supports_brightness():
+            supports.append(COLOR_MODE_BRIGHTNESS)
+
+        if self.unit.supports_color_temperature():
+            supports.append(COLOR_MODE_COLOR_TEMP)
+
+        return supports
 
     @property
     def is_on(self) -> bool:
