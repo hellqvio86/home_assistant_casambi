@@ -492,7 +492,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         brightness = 255
 
         if ATTR_COLOR_TEMP in kwargs:
-            _LOGGER.debug(f"ATTR_COLOR_TEMP: {ATTR_COLOR_TEMP}")
+            _LOGGER.debug(f"ATTR_COLOR_TEMP: {kwargs[ATTR_COLOR_TEMP]}")
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
