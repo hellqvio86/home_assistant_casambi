@@ -506,7 +506,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
                 await self.unit.set_unit_value(value=brightness)
         else:
             await self.unit.set_unit_color_temperature(
-                color_temp,
+                value=color_temp,
                 source='mired'
             )
 
