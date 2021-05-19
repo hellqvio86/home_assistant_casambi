@@ -66,9 +66,9 @@ CASAMBI_CONTROLLER = None
 
 
 async def async_setup_entry(
-    hass: core.HomeAssistant,
-    config_entry: config_entries.ConfigEntry,
-    async_add_entities,
+        hass: core.HomeAssistant,
+        config_entry: config_entries.ConfigEntry,
+        async_add_entities,
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
@@ -161,9 +161,15 @@ async def async_setup_entry(
     return True
 
 
-async def async_setup_platform(hass: HomeAssistant, config: dict,
-                               async_add_entities, discovery_info=None):
-
+async def async_setup_platform(
+        hass: HomeAssistant,
+        config: dict,
+        async_add_entities,
+        discovery_info=None
+    ):
+    '''
+    Setup Casambi platform
+    '''
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
@@ -265,10 +271,16 @@ class CasambiController:
 
     @property
     def controller(self):
+        '''
+        Getter for controller
+        '''
         return self._controller
 
     @controller.setter
     def controller(self, controller):
+        '''
+        Setter for controller
+        '''
         self._controller = controller
 
     async def async_update_data(self):
@@ -281,6 +293,9 @@ class CasambiController:
             await self.async_reconnect()
 
     async def async_reconnect(self):
+        '''
+        Reconnect to the Internet API
+        '''
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
         await self._controller.reconnect()
 
@@ -294,19 +309,31 @@ class CasambiController:
                                        self.async_reconnect)
 
     def update_unit_state(self, unit):
+        '''
+        Update unit state
+        '''
         _LOGGER.debug(f"update_unit_state: unit: {unit} units: {self.units}")
         if unit in self.units:
             self.units[unit].update_state()
 
     def update_all_units(self):
+        '''
+        Update all the units state
+        '''
         for key in self.units:
             self.units[key].update_state()
 
     def set_all_units_offline(self):
+        '''
+        Set all units to offline
+        '''
         for key in self.units:
             self.units[key].set_online(False)
 
     def signalling_callback(self, signal, data):
+        '''
+        Signalling callback
+        '''
 
         _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
 
@@ -346,7 +373,12 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     """Defines a Casambi Key Light."""
 
     def __init__(
-        self, coordinator, idx, unit, controller, hass
+            self,
+            coordinator,
+            idx,
+            unit,
+            controller,
+            hass
     ):
         """Initialize Casambi Key Light."""
         super().__init__(coordinator)
@@ -437,6 +469,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             return COLOR_MODE_COLOR_TEMP
         if self.unit.supports_brightness():
             return COLOR_MODE_BRIGHTNESS
+        
+        return None
 
     @property
     def supported_color_modes(self):
@@ -457,6 +491,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return bool(self._state)
 
     def set_online(self, online):
+        '''
+        Set unit to online
+        '''
         self.unit.online = online
 
         dbg_msg = 'set_online: Setting online to '
@@ -468,6 +505,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             self.async_schedule_update_ha_state(True)
 
     def update_state(self):
+        '''
+        Update units state
+        '''
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
             self.async_schedule_update_ha_state(True)
@@ -481,6 +521,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             self.async_schedule_update_ha_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
+        '''
+        Turn light off
+        '''
         _LOGGER.debug(f"async_turn_off {self}")
 
         await self.unit.turn_unit_off()
