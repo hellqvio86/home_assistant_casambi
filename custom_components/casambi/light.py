@@ -90,11 +90,11 @@ async def async_setup_entry(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    if CONF_CONTROLLER in config:
+    if CONF_CONTROLLER in hass.data[DOMAIN]:
         return
 
-    config[CONF_CONTROLLER] = CasambiController(hass)
-    casambi_controller = config[CONF_CONTROLLER]
+    hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -190,8 +190,8 @@ async def async_setup_platform(
     if CONF_CONTROLLER in config:
         return
 
-    config[CONF_CONTROLLER] = CasambiController(hass)
-    casambi_controller = config[CONF_CONTROLLER]
+    hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -205,7 +205,7 @@ async def async_setup_platform(
         network_timeout=network_timeout,
     )
 
-    config[CONF_CONTROLLER].controller = controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
