@@ -539,7 +539,10 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         color_temp = None
 
         if ATTR_COLOR_TEMP in kwargs:
-            _LOGGER.debug(f"ATTR_COLOR_TEMP: {kwargs[ATTR_COLOR_TEMP]}")
+            dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
+            dbg_msg += f" {kwargs[ATTR_COLOR_TEMP]}"
+            _LOGGER.debug(dbg_msg)
+
             color_temp = kwargs[ATTR_COLOR_TEMP]
 
         if ATTR_BRIGHTNESS in kwargs:
@@ -547,10 +550,24 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         if not color_temp:
             if brightness == 255:
+                dbg_msg = 'async_turn_on:'
+                dbg_msg += f"turning unit on name={self.name}"
+                _LOGGER.debug(dbg_msg)
+
                 await self.unit.turn_unit_on()
             else:
+                dbg_msg = 'async_turn_on:'
+                dbg_msg += f"setting units brightness name={self.name}"
+                dbg_msg += f" brightness={brightness}"
+                _LOGGER.debug(dbg_msg)
+
                 await self.unit.set_unit_value(value=brightness)
         else:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting units color name={self.name}"
+            dbg_msg += f" color_temp={color_temp}"
+            _LOGGER.debug(dbg_msg)
+
             await self.unit.set_unit_color_temperature(
                 value=color_temp,
                 source='mired'
