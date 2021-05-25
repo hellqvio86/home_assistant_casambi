@@ -50,6 +50,7 @@ from .const import (
     DOMAIN,
     WIRE_ID,
     CONFIG_SCHEMA,
+    CONF_CONTROLLER,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
     CONF_NETWORK_TIMEOUT,
@@ -89,12 +90,13 @@ async def async_setup_entry(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    global CASAMBI_CONTROLLER
-
-    if CASAMBI_CONTROLLER:
+    if CONF_CONTROLLER in hass.data[DOMAIN]:
+        dbg_msg = 'async_setup_platform CasambiController already created!'
+        _LOGGER.debug(dbg_msg)
         return
 
-    CASAMBI_CONTROLLER = CasambiController(hass)
+    hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -104,11 +106,11 @@ async def async_setup_entry(
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=CASAMBI_CONTROLLER.signalling_callback,
+        callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    CASAMBI_CONTROLLER.controller = controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -141,7 +143,7 @@ async def async_setup_entry(
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=CASAMBI_CONTROLLER.async_update_data,
+        update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -156,7 +158,7 @@ async def async_setup_entry(
                                      hass)
         async_add_entities([casambi_light], True)
 
-        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -187,12 +189,13 @@ async def async_setup_platform(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    global CASAMBI_CONTROLLER
-
-    if CASAMBI_CONTROLLER:
+    if CONF_CONTROLLER in hass.data[DOMAIN]:
+        dbg_msg = 'async_setup_platform CasambiController already created!'
+        _LOGGER.debug(dbg_msg)
         return
 
-    CASAMBI_CONTROLLER = CasambiController(hass)
+    hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -202,11 +205,11 @@ async def async_setup_platform(
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=CASAMBI_CONTROLLER.signalling_callback,
+        callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    CASAMBI_CONTROLLER.controller = controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -239,7 +242,7 @@ async def async_setup_platform(
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=CASAMBI_CONTROLLER.async_update_data,
+        update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -254,7 +257,7 @@ async def async_setup_platform(
                                      hass)
         async_add_entities([casambi_light], True)
 
-        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -536,7 +539,10 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         color_temp = None
 
         if ATTR_COLOR_TEMP in kwargs:
-            _LOGGER.debug(f"ATTR_COLOR_TEMP: {kwargs[ATTR_COLOR_TEMP]}")
+            dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
+            dbg_msg += f" {kwargs[ATTR_COLOR_TEMP]}"
+            _LOGGER.debug(dbg_msg)
+
             color_temp = kwargs[ATTR_COLOR_TEMP]
 
         if ATTR_BRIGHTNESS in kwargs:
@@ -544,10 +550,24 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         if not color_temp:
             if brightness == 255:
+                dbg_msg = 'async_turn_on:'
+                dbg_msg += f"turning unit on name={self.name}"
+                _LOGGER.debug(dbg_msg)
+
                 await self.unit.turn_unit_on()
             else:
+                dbg_msg = 'async_turn_on:'
+                dbg_msg += f"setting units brightness name={self.name}"
+                dbg_msg += f" brightness={brightness}"
+                _LOGGER.debug(dbg_msg)
+
                 await self.unit.set_unit_value(value=brightness)
         else:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting units color name={self.name}"
+            dbg_msg += f" color_temp={color_temp}"
+            _LOGGER.debug(dbg_msg)
+
             await self.unit.set_unit_color_temperature(
                 value=color_temp,
                 source='mired'
