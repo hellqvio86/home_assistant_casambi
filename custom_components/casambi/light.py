@@ -91,6 +91,8 @@ async def async_setup_entry(
     session = aiohttp_client.async_get_clientsession(hass)
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
+        dbg_msg = 'async_setup_platform CasambiController already created!'
+        _LOGGER.debug(dbg_msg)
         return
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
@@ -187,7 +189,9 @@ async def async_setup_platform(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    if CONF_CONTROLLER in config:
+    if CONF_CONTROLLER in hass.data[DOMAIN]:
+        dbg_msg = 'async_setup_platform CasambiController already created!'
+        _LOGGER.debug(dbg_msg)
         return
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
