@@ -469,7 +469,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             return COLOR_MODE_COLOR_TEMP
         if self.unit.supports_brightness():
             return COLOR_MODE_BRIGHTNESS
-        
+
         return None
 
     @property
