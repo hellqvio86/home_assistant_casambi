@@ -50,6 +50,7 @@ from .const import (
     DOMAIN,
     WIRE_ID,
     CONFIG_SCHEMA,
+    CONF_CONTROLLER,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
     CONF_NETWORK_TIMEOUT,
@@ -89,12 +90,11 @@ async def async_setup_entry(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    global CASAMBI_CONTROLLER
-
-    if CASAMBI_CONTROLLER:
+    if CONF_CONTROLLER in config:
         return
 
-    CASAMBI_CONTROLLER = CasambiController(hass)
+    config[CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = config[CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -104,11 +104,11 @@ async def async_setup_entry(
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=CASAMBI_CONTROLLER.signalling_callback,
+        callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    CASAMBI_CONTROLLER.controller = controller
+    casambi_controller.controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -141,7 +141,7 @@ async def async_setup_entry(
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=CASAMBI_CONTROLLER.async_update_data,
+        update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -156,7 +156,7 @@ async def async_setup_entry(
                                      hass)
         async_add_entities([casambi_light], True)
 
-        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
 
@@ -187,12 +187,11 @@ async def async_setup_platform(
     sslcontext = ssl.create_default_context()
     session = aiohttp_client.async_get_clientsession(hass)
 
-    global CASAMBI_CONTROLLER
-
-    if CASAMBI_CONTROLLER:
+    if CONF_CONTROLLER in config:
         return
 
-    CASAMBI_CONTROLLER = CasambiController(hass)
+    config[CONF_CONTROLLER] = CasambiController(hass)
+    casambi_controller = config[CONF_CONTROLLER]
 
     controller = aiocasambi.Controller(
         email=email,
@@ -202,11 +201,11 @@ async def async_setup_platform(
         websession=session,
         sslcontext=sslcontext,
         wire_id=WIRE_ID,
-        callback=CASAMBI_CONTROLLER.signalling_callback,
+        callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
 
-    CASAMBI_CONTROLLER.controller = controller
+    config[CONF_CONTROLLER].controller = controller
 
     try:
         with async_timeout.timeout(10):
@@ -239,7 +238,7 @@ async def async_setup_platform(
         _LOGGER,
         # Name of the data. For logging purposes.
         name="light",
-        update_method=CASAMBI_CONTROLLER.async_update_data,
+        update_method=casambi_controller.async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
         update_interval=timedelta(seconds=scan_interval),
     )
@@ -254,7 +253,7 @@ async def async_setup_platform(
                                      hass)
         async_add_entities([casambi_light], True)
 
-        CASAMBI_CONTROLLER.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     return True
 

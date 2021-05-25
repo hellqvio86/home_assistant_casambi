@@ -18,6 +18,7 @@ DEFAULT_POLLING_TIME = 60
 CONF_USER_PASSWORD = "user_password"
 CONF_NETWORK_PASSWORD = "network_password"
 CONF_NETWORK_TIMEOUT = 'network_timeout'
+CONF_CONTROLLER = 'controller'
 
 ATTR_IDENTIFIERS = "identifiers"
 ATTR_MANUFACTURER = "manufacturer"
