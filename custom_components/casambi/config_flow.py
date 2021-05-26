@@ -4,37 +4,28 @@ Config flow for Casambi integration
 import logging
 from typing import Any, Dict, Optional
 
+import homeassistant.helpers.config_validation as cv
 from homeassistant import config_entries, core
 from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
     CONF_NAME,
     CONF_EMAIL,
     CONF_API_KEY,
-    CONF_PATH,
-    CONF_URL,
-    CONF_SCAN_INTERVAL
 )
-from aiocasambi.helper import Helper
-from aiocasambi.errors import AiocasambiException
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_registry import (
     async_entries_for_config_entry,
     async_get_registry,
 )
 import voluptuous as vol
 
+from aiocasambi.helper import Helper
+from aiocasambi.errors import AiocasambiException
+
 from .const import (
     DOMAIN,
-    WIRE_ID,
-    CONFIG_SCHEMA,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
-    CONF_NETWORK_TIMEOUT,
-    ATTR_IDENTIFIERS,
-    ATTR_MANUFACTURER,
-    ATTR_MODEL,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -65,7 +56,8 @@ async def validate_user_password(
         user_password: str,
         hass: core.HomeAssistant
 ) -> None:
-    """Validates a GitHub access token.
+    """
+    Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
     """
