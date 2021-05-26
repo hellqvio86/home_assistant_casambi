@@ -1,4 +1,6 @@
-from copy import deepcopy
+'''
+Config flow for Casambi integration
+'''
 import logging
 from typing import Any, Dict, Optional
 
@@ -53,11 +55,16 @@ REPO_SCHEMA = vol.Schema(
     }
 )
 
-OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
+OPTIONS_SHCEMA = vol.Schema(
+    {vol.Optional(CONF_NAME, default="foo"): cv.string})
 
 
-async def validate_user_password(email: str, api_key: str, user_password: str, 
-    hass: core.HomeAssistant) -> None:
+async def validate_user_password(
+        email: str,
+        api_key: str,
+        user_password: str,
+        hass: core.HomeAssistant
+) -> None:
     """Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
@@ -72,7 +79,7 @@ async def validate_user_password(email: str, api_key: str, user_password: str,
 
 
 async def validate_network_password(email: str, api_key: str,
-    network_password: str, hass: core.HomeAssistant) -> None:
+                                    network_password: str, hass: core.HomeAssistant) -> None:
     """Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
@@ -97,12 +104,22 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             _LOGGER.debug(f"async_step_user user_input: {user_input}")
             try:
-                await validate_user_password(user_input[CONF_EMAIL], user_input[CONF_API_KEY], user_input[CONF_USER_PASSWORD], self.hass)
+                await validate_user_password(
+                    user_input[CONF_EMAIL],
+                    user_input[CONF_API_KEY],
+                    user_input[CONF_USER_PASSWORD],
+                    self.hass
+                    )
             except ValueError:
                 errors["base"] = "auth_user_password"
 
             try:
-                await validate_network_password(user_input[CONF_EMAIL], user_input[CONF_API_KEY], user_input[CONF_NETWORK_PASSWORD], self.hass)
+                await validate_network_password(
+                    user_input[CONF_EMAIL],
+                    user_input[CONF_API_KEY],
+                    user_input[CONF_NETWORK_PASSWORD],
+                    self.hass
+                    )
             except ValueError:
                 errors["base"] = "auth_network_password"
 
