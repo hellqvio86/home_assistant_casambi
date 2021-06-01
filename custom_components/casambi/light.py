@@ -7,8 +7,16 @@ import logging
 import ssl
 import asyncio
 
-import aiocasambi
 import async_timeout
+import aiocasambi
+from aiocasambi.consts import (
+    SIGNAL_DATA,
+    STATE_RUNNING,
+    SIGNAL_CONNECTION_STATE,
+    STATE_DISCONNECTED,
+    STATE_STOPPED,
+    SIGNAL_UNIT_PULL_UPDATE
+)
 
 from typing import Any, Dict, Optional
 from datetime import timedelta
@@ -35,15 +43,6 @@ from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
     CONF_SCAN_INTERVAL
-)
-
-from aiocasambi.consts import (
-    SIGNAL_DATA,
-    STATE_RUNNING,
-    SIGNAL_CONNECTION_STATE,
-    STATE_DISCONNECTED,
-    STATE_STOPPED,
-    SIGNAL_UNIT_PULL_UPDATE
 )
 
 from .const import (
