@@ -7,7 +7,7 @@
         "description": "Enter your Casambi credentials.",
         "data": {
           "email": "Email",
-          "user_password": "User password",
+          "user_password": "User password (site password)",
           "network_password": "Network password",
           "api_key": "api key",
           "network_timeout": "Network timeout",
