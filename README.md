@@ -58,7 +58,7 @@ light:
 Of course you need to make sure you have the secrets available.
 
 ### Troubleshot
-#### Enable logging
+#### Enable logging in your configuration.yml
 ```
 logger:
   default: info
