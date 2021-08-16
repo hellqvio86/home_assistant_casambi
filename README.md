@@ -65,6 +65,7 @@ logger:
   logs:
     homeassistant.components.casambi: debug
     custom_components.casambi: debug
+    aiocasambi: debug
 ```
 
 ### Todo list
