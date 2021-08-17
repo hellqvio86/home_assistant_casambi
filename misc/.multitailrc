@@ -1,6 +1,7 @@
 # Start multitail:
-# multitail -cS casambi /usr/share/hassio/homeassistant/home-assistant.log
+# multitail -cS casambi -I /usr/share/hassio/homeassistant/home-assistant.log
 colorscheme:casambi
 cs_re:green:.+casambi.*
 cs_re:red:.+exception.*
 cs_re:red:.+error.*
+cs_re:magenta:.+async_turn_off.*
