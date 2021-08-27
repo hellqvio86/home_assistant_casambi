@@ -28,6 +28,7 @@ from homeassistant.components.light import (
     ATTR_COLOR_TEMP,
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
+    COLOR_MODE_RGB
 )
 
 from homeassistant.helpers.update_coordinator import (
@@ -456,6 +457,10 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return self.unit.get_color_temp()
 
     @property
+    def rgb_color(self):
+        return self.unit.get_rgb_color()
+
+    @property
     def supported_features(self) -> int:
         """
         Flag supported features.
@@ -467,6 +472,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     @property
     def color_mode(self):
         """Set color mode for this entity."""
+        if self.unit.supports_rgb():
+            return COLOR_MODE_RGB
         if self.unit.supports_color_temperature():
             return COLOR_MODE_COLOR_TEMP
         if self.unit.supports_brightness():
@@ -484,6 +491,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         if self.unit.supports_color_temperature():
             supports.append(COLOR_MODE_COLOR_TEMP)
+
+        if self.unit.supports_rgb():
+            supports.append(COLOR_MODE_RGB)
 
         return supports
 
@@ -536,6 +546,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
         color_temp = None
+        rgb = None
 
         if ATTR_COLOR_TEMP in kwargs:
             dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
@@ -546,6 +557,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
+
+        if ATTR_
 
         if not color_temp:
             if brightness == 255:
