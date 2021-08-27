@@ -558,8 +558,6 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         if ATTR_BRIGHTNESS in kwargs:
             brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
 
-        if ATTR_
-
         if not color_temp:
             if brightness == 255:
                 dbg_msg = 'async_turn_on:'
