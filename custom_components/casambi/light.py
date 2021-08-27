@@ -26,6 +26,7 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS,
     LightEntity,
     ATTR_COLOR_TEMP,
+    ATTR_RGB_COLOR,
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
     COLOR_MODE_RGB
@@ -545,8 +546,6 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         _LOGGER.debug(
             f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
-        color_temp = None
-        rgb = None
 
         if ATTR_COLOR_TEMP in kwargs:
             dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
@@ -555,26 +554,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
             color_temp = kwargs[ATTR_COLOR_TEMP]
 
-        if ATTR_BRIGHTNESS in kwargs:
-            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
-
-        if not color_temp:
-            if brightness == 255:
-                dbg_msg = 'async_turn_on:'
-                dbg_msg += f"turning unit on name={self.name}"
-                _LOGGER.debug(dbg_msg)
-
-                await self.unit.turn_unit_on()
-            else:
-                dbg_msg = 'async_turn_on:'
-                dbg_msg += f"setting units brightness name={self.name}"
-                dbg_msg += f" brightness={brightness}"
-                _LOGGER.debug(dbg_msg)
-
-                await self.unit.set_unit_value(value=brightness)
-        else:
             dbg_msg = 'async_turn_on:'
-            dbg_msg += f"setting units color name={self.name}"
+            dbg_msg += f"setting unit color name={self.name}"
             dbg_msg += f" color_temp={color_temp}"
             _LOGGER.debug(dbg_msg)
 
@@ -582,6 +563,39 @@ class CasambiLight(CoordinatorEntity, LightEntity):
                 value=color_temp,
                 source='mired'
             )
+
+            return
+
+        if ATTR_RGB_COLOR in kwargs:
+            (red, green, blue) = kwargs[ATTR_RGB_COLOR]
+
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting unit color name={self.name}"
+            dbg_msg += f" rgb=({red}, {green}, {blue})"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_rgb(
+                value=(red, green, blue),
+            )
+
+            return
+
+        if ATTR_BRIGHTNESS in kwargs:
+            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
+
+        if brightness == 255:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"turning unit on name={self.name}"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.turn_unit_on()
+        else:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting units brightness name={self.name}"
+            dbg_msg += f" brightness={brightness}"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_value(value=brightness)
 
     @property
     def should_poll(self):
