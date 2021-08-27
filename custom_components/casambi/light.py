@@ -579,16 +579,15 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
     async def async_update(self) -> None:
         """Update Casambi entity."""
-        if self.unit.value > 0:
-            self._state = True
-            self._brightness = int(round(self.unit.value * 255))
-        else:
-            self._state = False
-
-        _LOGGER.debug(f"async_update {self}")
-
         if not self.unit.online:
             _LOGGER.info(f"async_update: unit is not online: {self}")
+        else:
+            if self.unit.value > 0:
+                self._state = True
+                self._brightness = int(round(self.unit.value * 255))
+            else:
+                self._state = False
+        _LOGGER.debug(f"async_update {self}")
 
     @property
     def device_info(self) -> Dict[str, Any]:
