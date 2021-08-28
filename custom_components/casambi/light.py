@@ -575,7 +575,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             _LOGGER.debug(dbg_msg)
 
             await self.unit.set_unit_rgb(
-                value=(red, green, blue),
+                color_value=(red, green, blue),
             )
 
             return
