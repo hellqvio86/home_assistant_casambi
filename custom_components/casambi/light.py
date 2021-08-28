@@ -27,9 +27,11 @@ from homeassistant.components.light import (
     LightEntity,
     ATTR_COLOR_TEMP,
     ATTR_RGB_COLOR,
+    ATTR_RGBW_COLOR,
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
-    COLOR_MODE_RGB
+    COLOR_MODE_RGB,
+    COLOR_MODE_RGBW
 )
 
 from homeassistant.helpers.update_coordinator import (
@@ -462,6 +464,10 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return self.unit.get_rgb_color()
 
     @property
+    def rgbw_color(self):
+        return self.unit.get_rgbw_color()
+
+    @property
     def supported_features(self) -> int:
         """
         Flag supported features.
@@ -473,6 +479,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     @property
     def color_mode(self):
         """Set color mode for this entity."""
+        if self.unit.supports_rgbw():
+            return COLOR_MODE_RGBW
         if self.unit.supports_rgb():
             return COLOR_MODE_RGB
         if self.unit.supports_color_temperature():
@@ -493,7 +501,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         if self.unit.supports_color_temperature():
             supports.append(COLOR_MODE_COLOR_TEMP)
 
-        if self.unit.supports_rgb():
+        if self.unit.supports_rgbw():
+            supports.append(COLOR_MODE_RGBW)
+        elif self.unit.supports_rgb():
             supports.append(COLOR_MODE_RGB)
 
         return supports
@@ -562,6 +572,20 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             await self.unit.set_unit_color_temperature(
                 value=color_temp,
                 source='mired'
+            )
+
+            return
+
+        if ATTR_RGBW_COLOR in kwargs:
+            (red, green, blue, white) = kwargs[ATTR_RGBW_COLOR]
+
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting unit color name={self.name}"
+            dbg_msg += f" rgbw=({red}, {green}, {blue}, {white})"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_rgbw(
+                color_value=(red, green, blue, white),
             )
 
             return
