@@ -12,6 +12,8 @@ These modes are implemented:
 * on/off
 * brightness
 * color temperature
+* rgb
+* rgbw
 
 ## Usage
 
