@@ -26,8 +26,10 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS,
     LightEntity,
     ATTR_COLOR_TEMP,
+    ATTR_RGB_COLOR,
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
+    COLOR_MODE_RGB
 )
 
 from homeassistant.helpers.update_coordinator import (
@@ -456,6 +458,10 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return self.unit.get_color_temp()
 
     @property
+    def rgb_color(self):
+        return self.unit.get_rgb_color()
+
+    @property
     def supported_features(self) -> int:
         """
         Flag supported features.
@@ -467,6 +473,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     @property
     def color_mode(self):
         """Set color mode for this entity."""
+        if self.unit.supports_rgb():
+            return COLOR_MODE_RGB
         if self.unit.supports_color_temperature():
             return COLOR_MODE_COLOR_TEMP
         if self.unit.supports_brightness():
@@ -484,6 +492,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
         if self.unit.supports_color_temperature():
             supports.append(COLOR_MODE_COLOR_TEMP)
+
+        if self.unit.supports_rgb():
+            supports.append(COLOR_MODE_RGB)
 
         return supports
 
@@ -535,7 +546,6 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         _LOGGER.debug(
             f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
-        color_temp = None
 
         if ATTR_COLOR_TEMP in kwargs:
             dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
@@ -544,26 +554,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
             color_temp = kwargs[ATTR_COLOR_TEMP]
 
-        if ATTR_BRIGHTNESS in kwargs:
-            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
-
-        if not color_temp:
-            if brightness == 255:
-                dbg_msg = 'async_turn_on:'
-                dbg_msg += f"turning unit on name={self.name}"
-                _LOGGER.debug(dbg_msg)
-
-                await self.unit.turn_unit_on()
-            else:
-                dbg_msg = 'async_turn_on:'
-                dbg_msg += f"setting units brightness name={self.name}"
-                dbg_msg += f" brightness={brightness}"
-                _LOGGER.debug(dbg_msg)
-
-                await self.unit.set_unit_value(value=brightness)
-        else:
             dbg_msg = 'async_turn_on:'
-            dbg_msg += f"setting units color name={self.name}"
+            dbg_msg += f"setting unit color name={self.name}"
             dbg_msg += f" color_temp={color_temp}"
             _LOGGER.debug(dbg_msg)
 
@@ -572,6 +564,39 @@ class CasambiLight(CoordinatorEntity, LightEntity):
                 source='mired'
             )
 
+            return
+
+        if ATTR_RGB_COLOR in kwargs:
+            (red, green, blue) = kwargs[ATTR_RGB_COLOR]
+
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting unit color name={self.name}"
+            dbg_msg += f" rgb=({red}, {green}, {blue})"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_rgb(
+                color_value=(red, green, blue),
+            )
+
+            return
+
+        if ATTR_BRIGHTNESS in kwargs:
+            brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
+
+        if brightness == 255:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"turning unit on name={self.name}"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.turn_unit_on()
+        else:
+            dbg_msg = 'async_turn_on:'
+            dbg_msg += f"setting units brightness name={self.name}"
+            dbg_msg += f" brightness={brightness}"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_value(value=brightness)
+
     @property
     def should_poll(self):
         """Disable polling by returning False"""
@@ -579,16 +604,15 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
     async def async_update(self) -> None:
         """Update Casambi entity."""
-        if self.unit.value > 0:
-            self._state = True
-            self._brightness = int(round(self.unit.value * 255))
-        else:
-            self._state = False
-
-        _LOGGER.debug(f"async_update {self}")
-
         if not self.unit.online:
             _LOGGER.info(f"async_update: unit is not online: {self}")
+        else:
+            if self.unit.value > 0:
+                self._state = True
+                self._brightness = int(round(self.unit.value * 255))
+            else:
+                self._state = False
+        _LOGGER.debug(f"async_update {self}")
 
     @property
     def device_info(self) -> Dict[str, Any]:
