@@ -533,6 +533,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         '''
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
+            _LOGGER.debug(f"update_state {self}")
             self.async_schedule_update_ha_state(True)
 
     def process_update(self, data):
