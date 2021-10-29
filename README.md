@@ -48,20 +48,20 @@ Add these lines in your configuration.yml
 
 ```
 light:
-  platform: casambi
-  email: !secret casambi_email
-  api_key: !secret casambi_api_key
-  network_password : !secret casambi_network_password # The network password
-  user_password : !secret casambi_user_password # The site password for your user
+  - platform: casambi
+    email: !secret casambi_email
+    api_key: !secret casambi_api_key
+    network_password : !secret casambi_network_password # The network password
+    user_password : !secret casambi_user_password # The site password for your user
 ```
 
 Optional arguments:
 ```
 light:
-  platform: casambi
-  ...
-  network_timeout: 30    #default is 300 seconds
-  scan_interval: 60      #default is 60 seconds
+  - platform: casambi
+    ...
+    network_timeout: 30    #default is 300 seconds
+    scan_interval: 60      #default is 60 seconds
 ```
 
 Of course you need to make sure you have the secrets available.
