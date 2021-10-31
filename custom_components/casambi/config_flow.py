@@ -1,6 +1,6 @@
-'''
+"""
 Config flow for Casambi integration
-'''
+"""
 import logging
 from typing import Any, Dict, Optional
 
@@ -35,7 +35,7 @@ AUTH_SCHEMA = vol.Schema(
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
         vol.Required(CONF_USER_PASSWORD): cv.string,
-        vol.Required(CONF_NETWORK_PASSWORD): cv.string
+        vol.Required(CONF_NETWORK_PASSWORD): cv.string,
     }
 )
 REPO_SCHEMA = vol.Schema(
@@ -46,15 +46,11 @@ REPO_SCHEMA = vol.Schema(
     }
 )
 
-OPTIONS_SHCEMA = vol.Schema(
-    {vol.Optional(CONF_NAME, default="foo"): cv.string})
+OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
 
 async def validate_user_password(
-        email: str,
-        api_key: str,
-        user_password: str,
-        hass: core.HomeAssistant
+    email: str, api_key: str, user_password: str, hass: core.HomeAssistant
 ) -> None:
     """
     Validates a GitHub access token.
@@ -70,8 +66,9 @@ async def validate_user_password(
         raise ValueError
 
 
-async def validate_network_password(email: str, api_key: str,
-                                    network_password: str, hass: core.HomeAssistant) -> None:
+async def validate_network_password(
+    email: str, api_key: str, network_password: str, hass: core.HomeAssistant
+) -> None:
     """Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
@@ -100,8 +97,8 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_EMAIL],
                     user_input[CONF_API_KEY],
                     user_input[CONF_USER_PASSWORD],
-                    self.hass
-                    )
+                    self.hass,
+                )
             except ValueError:
                 errors["base"] = "auth_user_password"
 
@@ -110,8 +107,8 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_EMAIL],
                     user_input[CONF_API_KEY],
                     user_input[CONF_NETWORK_PASSWORD],
-                    self.hass
-                    )
+                    self.hass,
+                )
             except ValueError:
                 errors["base"] = "auth_network_password"
 

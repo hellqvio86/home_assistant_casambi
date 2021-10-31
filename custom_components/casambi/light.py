@@ -15,7 +15,7 @@ from aiocasambi.consts import (
     SIGNAL_CONNECTION_STATE,
     STATE_DISCONNECTED,
     STATE_STOPPED,
-    SIGNAL_UNIT_PULL_UPDATE
+    SIGNAL_UNIT_PULL_UPDATE,
 )
 
 from typing import Any, Dict, Optional
@@ -31,7 +31,7 @@ from homeassistant.components.light import (
     COLOR_MODE_BRIGHTNESS,
     COLOR_MODE_COLOR_TEMP,
     COLOR_MODE_RGB,
-    COLOR_MODE_RGBW
+    COLOR_MODE_RGBW,
 )
 
 from homeassistant.helpers.update_coordinator import (
@@ -43,11 +43,7 @@ from homeassistant import config_entries, core
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_API_KEY,
-    CONF_SCAN_INTERVAL
-)
+from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 from .const import (
     DOMAIN,
@@ -61,7 +57,7 @@ from .const import (
     ATTR_MANUFACTURER,
     ATTR_MODEL,
     DEFAULT_NETWORK_TIMEOUT,
-    DEFAULT_POLLING_TIME
+    DEFAULT_POLLING_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -70,9 +66,9 @@ CASAMBI_CONTROLLER = None
 
 
 async def async_setup_entry(
-        hass: core.HomeAssistant,
-        config_entry: config_entries.ConfigEntry,
-        async_add_entities,
+    hass: core.HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
@@ -94,7 +90,7 @@ async def async_setup_entry(
     session = aiohttp_client.async_get_clientsession(hass)
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
-        dbg_msg = 'async_setup_platform CasambiController already created!'
+        dbg_msg = "async_setup_platform CasambiController already created!"
         _LOGGER.debug(dbg_msg)
         return
 
@@ -130,11 +126,11 @@ async def async_setup_entry(
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error('Error connecting to the Casambi')
+        _LOGGER.error("Error connecting to the Casambi")
         return False
 
     except aiocasambi.AiocasambiException:
-        _LOGGER.error('Unknown Casambi communication error occurred')
+        _LOGGER.error("Unknown Casambi communication error occurred")
         return False
 
     await controller.initialize()
@@ -154,11 +150,9 @@ async def async_setup_entry(
     await coordinator.async_refresh()
 
     for unit in units:
-        casambi_light = CasambiLight(coordinator,
-                                     unit.unique_id,
-                                     unit,
-                                     controller,
-                                     hass)
+        casambi_light = CasambiLight(
+            coordinator, unit.unique_id, unit, controller, hass
+        )
         async_add_entities([casambi_light], True)
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
@@ -167,14 +161,11 @@ async def async_setup_entry(
 
 
 async def async_setup_platform(
-        hass: HomeAssistant,
-        config: dict,
-        async_add_entities,
-        discovery_info=None
-    ):
-    '''
+    hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None
+):
+    """
     Setup Casambi platform
-    '''
+    """
     user_password = config[CONF_USER_PASSWORD]
     network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
@@ -193,7 +184,7 @@ async def async_setup_platform(
     session = aiohttp_client.async_get_clientsession(hass)
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
-        dbg_msg = 'async_setup_platform CasambiController already created!'
+        dbg_msg = "async_setup_platform CasambiController already created!"
         _LOGGER.debug(dbg_msg)
         return
 
@@ -229,11 +220,11 @@ async def async_setup_platform(
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error('Error connecting to the Casambi')
+        _LOGGER.error("Error connecting to the Casambi")
         return False
 
     except aiocasambi.AiocasambiException:
-        _LOGGER.error('Unknown Casambi communication error occurred')
+        _LOGGER.error("Unknown Casambi communication error occurred")
         return False
 
     await controller.initialize()
@@ -253,11 +244,9 @@ async def async_setup_platform(
     await coordinator.async_refresh()
 
     for unit in units:
-        casambi_light = CasambiLight(coordinator,
-                                     unit.unique_id,
-                                     unit,
-                                     controller,
-                                     hass)
+        casambi_light = CasambiLight(
+            coordinator, unit.unique_id, unit, controller, hass
+        )
         async_add_entities([casambi_light], True)
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
@@ -277,21 +266,21 @@ class CasambiController:
 
     @property
     def controller(self):
-        '''
+        """
         Getter for controller
-        '''
+        """
         return self._controller
 
     @controller.setter
     def controller(self, controller):
-        '''
+        """
         Setter for controller
-        '''
+        """
         self._controller = controller
 
     async def async_update_data(self):
-        ''' Function for polling network state (state of lights) '''
-        _LOGGER.debug('async_update_data started')
+        """ Function for polling network state (state of lights) """
+        _LOGGER.debug("async_update_data started")
         try:
             await self._controller.get_network_state()
         except aiocasambi.LoginRequired:
@@ -299,47 +288,46 @@ class CasambiController:
             await self.async_reconnect()
 
     async def async_reconnect(self):
-        '''
+        """
         Reconnect to the Internet API
-        '''
+        """
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
         await self._controller.reconnect()
 
         if self._controller.get_websocket_state() != STATE_RUNNING:
-            msg = 'async_reconnect: could not connect to casambi. '
+            msg = "async_reconnect: could not connect to casambi. "
             msg += f"trying again in {self._network_retry_timer} seconds"
             _LOGGER.debug(msg)
 
             # Try again to reconnect
-            self._hass.loop.call_later(self._network_retry_timer,
-                                       self.async_reconnect)
+            self._hass.loop.call_later(self._network_retry_timer, self.async_reconnect)
 
     def update_unit_state(self, unit):
-        '''
+        """
         Update unit state
-        '''
+        """
         _LOGGER.debug(f"update_unit_state: unit: {unit} units: {self.units}")
         if unit in self.units:
             self.units[unit].update_state()
 
     def update_all_units(self):
-        '''
+        """
         Update all the units state
-        '''
+        """
         for key in self.units:
             self.units[key].update_state()
 
     def set_all_units_offline(self):
-        '''
+        """
         Set all units to offline
-        '''
+        """
         for key in self.units:
             self.units[key].set_online(False)
 
     def signalling_callback(self, signal, data):
-        '''
+        """
         Signalling callback
-        '''
+        """
 
         _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
 
@@ -349,7 +337,7 @@ class CasambiController:
                 if unit:
                     self.units[key].process_update(value)
                 else:
-                    error_msg = 'signalling_callback unit is null!'
+                    error_msg = "signalling_callback unit is null!"
                     error_msg += f"signal: {signal} data: {data}"
                     _LOGGER.error(error_msg)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
@@ -360,8 +348,7 @@ class CasambiController:
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
-        elif signal == SIGNAL_CONNECTION_STATE \
-                and (data == STATE_DISCONNECTED):
+        elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
             # Set all units to offline
@@ -378,14 +365,7 @@ class CasambiController:
 class CasambiLight(CoordinatorEntity, LightEntity):
     """Defines a Casambi Key Light."""
 
-    def __init__(
-            self,
-            coordinator,
-            idx,
-            unit,
-            controller,
-            hass
-    ):
+    def __init__(self, coordinator, idx, unit, controller, hass):
         """Initialize Casambi Key Light."""
         super().__init__(coordinator)
         self.idx = idx
@@ -514,13 +494,13 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         return bool(self._state)
 
     def set_online(self, online):
-        '''
+        """
         Set unit to online
-        '''
+        """
         self.unit.online = online
 
-        dbg_msg = 'set_online: Setting online to '
-        dbg_msg += f"\"{online}\" for unit {self}"
+        dbg_msg = "set_online: Setting online to "
+        dbg_msg += f'"{online}" for unit {self}'
         _LOGGER.debug(dbg_msg)
 
         if self.enabled:
@@ -528,9 +508,9 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             self.async_schedule_update_ha_state(True)
 
     def update_state(self):
-        '''
+        """
         Update units state
-        '''
+        """
         if self.enabled:
             # Device needs to be enabled for us to schedule updates
             _LOGGER.debug(f"update_state {self}")
@@ -545,42 +525,38 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             self.async_schedule_update_ha_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        '''
+        """
         Turn light off
-        '''
+        """
         _LOGGER.debug(f"async_turn_off {self}")
 
         await self.unit.turn_unit_off()
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the light."""
-        _LOGGER.debug(
-            f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
+        _LOGGER.debug(f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
 
         if ATTR_COLOR_TEMP in kwargs:
-            dbg_msg = 'async_turn_on: ATTR_COLOR_TEMP:'
+            dbg_msg = "async_turn_on: ATTR_COLOR_TEMP:"
             dbg_msg += f" {kwargs[ATTR_COLOR_TEMP]}"
             _LOGGER.debug(dbg_msg)
 
             color_temp = kwargs[ATTR_COLOR_TEMP]
 
-            dbg_msg = 'async_turn_on:'
+            dbg_msg = "async_turn_on:"
             dbg_msg += f"setting unit color name={self.name}"
             dbg_msg += f" color_temp={color_temp}"
             _LOGGER.debug(dbg_msg)
 
-            await self.unit.set_unit_color_temperature(
-                value=color_temp,
-                source='mired'
-            )
+            await self.unit.set_unit_color_temperature(value=color_temp, source="mired")
 
             return
 
         if ATTR_RGBW_COLOR in kwargs:
             (red, green, blue, white) = kwargs[ATTR_RGBW_COLOR]
 
-            dbg_msg = 'async_turn_on:'
+            dbg_msg = "async_turn_on:"
             dbg_msg += f"setting unit color name={self.name}"
             dbg_msg += f" rgbw=({red}, {green}, {blue}, {white})"
             _LOGGER.debug(dbg_msg)
@@ -594,14 +570,13 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         if ATTR_RGB_COLOR in kwargs:
             (red, green, blue) = kwargs[ATTR_RGB_COLOR]
 
-            dbg_msg = 'async_turn_on:'
+            dbg_msg = "async_turn_on:"
             dbg_msg += f"setting unit color name={self.name}"
             dbg_msg += f" rgb=({red}, {green}, {blue})"
             _LOGGER.debug(dbg_msg)
 
             await self.unit.set_unit_rgb(
-                color_value=(red, green, blue),
-                send_rgb_format=True
+                color_value=(red, green, blue), send_rgb_format=True
             )
 
             return
@@ -610,13 +585,13 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             brightness = round((kwargs[ATTR_BRIGHTNESS] / 255.0), 2)
 
         if brightness == 255:
-            dbg_msg = 'async_turn_on:'
+            dbg_msg = "async_turn_on:"
             dbg_msg += f"turning unit on name={self.name}"
             _LOGGER.debug(dbg_msg)
 
             await self.unit.turn_unit_on()
         else:
-            dbg_msg = 'async_turn_on:'
+            dbg_msg = "async_turn_on:"
             dbg_msg += f"setting units brightness name={self.name}"
             dbg_msg += f" brightness={brightness}"
             _LOGGER.debug(dbg_msg)
@@ -643,8 +618,8 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device information about this Casambi Key Light."""
-        model = 'Casambi'
-        manufacturer = 'Casambi'
+        model = "Casambi"
+        manufacturer = "Casambi"
 
         if self.unit.fixture_model:
             model = self.unit.fixture_model
