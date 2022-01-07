@@ -34,6 +34,11 @@ from homeassistant.components.light import (
     COLOR_MODE_RGBW,
 )
 
+try:
+    from homeassistant.components.light import ATTR_DISTRIBUTION
+except ImportError:
+    ATTR_DISTRIBUTION = "distribution"
+
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -370,6 +375,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         super().__init__(coordinator)
         self.idx = idx
         self._brightness: Optional[int] = None
+        self._distribution: Optional[int] = None
         self._state: Optional[bool] = None
         self._temperature: Optional[int] = None
         self.unit = unit
@@ -395,6 +401,11 @@ class CasambiLight(CoordinatorEntity, LightEntity):
     def brightness(self) -> Optional[int]:
         """Return the brightness of this light between 1..255."""
         return self._brightness
+
+    @property
+    def distribution(self) -> Optional[int]:
+        """Return the distribution of this light between 1..255."""
+        return self._distribution
 
     @property
     def min_mireds(self) -> int:
@@ -493,6 +504,13 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         """Return the state of the light."""
         return bool(self._state)
 
+    @property
+    def extra_state_attributes(self):  # -> dict[str, str] | None:
+        #    """Return the optional state attributes."""
+        return {
+            "distribution": self._distribution,
+        }
+
     def set_online(self, online):
         """
         Set unit to online
@@ -536,6 +554,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
         """Turn on the light."""
         _LOGGER.debug(f"async_turn_on {self} unit: {self.unit} kwargs: {kwargs}")
         brightness = 255
+        distribution = 255
 
         if ATTR_COLOR_TEMP in kwargs:
             dbg_msg = "async_turn_on: ATTR_COLOR_TEMP:"
@@ -598,6 +617,16 @@ class CasambiLight(CoordinatorEntity, LightEntity):
 
             await self.unit.set_unit_value(value=brightness)
 
+        if ATTR_DISTRIBUTION in kwargs:
+            distribution = round((kwargs[ATTR_DISTRIBUTION] / 255.0), 2)
+
+            dbg_msg = "async_turn_on:"
+            dbg_msg += f"setting units distribution name={self.name}"
+            dbg_msg += f" distribution={distribution}"
+            _LOGGER.debug(dbg_msg)
+
+            await self.unit.set_unit_distribution(distribution=distribution)
+
     @property
     def should_poll(self):
         """Disable polling by returning False"""
@@ -611,6 +640,7 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             if self.unit.value > 0:
                 self._state = True
                 self._brightness = int(round(self.unit.value * 255))
+                self._distribution = int(round(self.unit.distribution * 255))
             else:
                 self._state = False
         _LOGGER.debug(f"async_update {self}")
