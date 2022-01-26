@@ -7,8 +7,12 @@ import logging
 import ssl
 import asyncio
 
+from datetime import timedelta
+from typing import Any, Dict, Optional
+
 import async_timeout
 import aiocasambi
+
 from aiocasambi.consts import (
     SIGNAL_DATA,
     STATE_RUNNING,
@@ -17,9 +21,6 @@ from aiocasambi.consts import (
     STATE_STOPPED,
     SIGNAL_UNIT_PULL_UPDATE,
 )
-
-from typing import Any, Dict, Optional
-from datetime import timedelta
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
@@ -56,7 +57,6 @@ from homeassistant.helpers import entity_platform
 from .const import (
     DOMAIN,
     WIRE_ID,
-    CONFIG_SCHEMA,
     CONF_CONTROLLER,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
@@ -285,7 +285,7 @@ async def async_setup_platform(
         _LOGGER.debug(dbg_msg)
 
         # Check if entities were selected
-        if not ATTR_SERV_ENTITY_ID in call.data:
+        if ATTR_SERV_ENTITY_ID not in call.data:
             # service handle currently only supports selection of entities
             dbg_msg = f"ServiceCall {call.domain}.{call.service}: No entity was specified. Please specify entities instead of areas or devices."
             _LOGGER.error(dbg_msg)
@@ -357,7 +357,7 @@ class CasambiController:
         self._controller = controller
 
     async def async_update_data(self):
-        """ Function for polling network state (state of lights) """
+        """Function for polling network state (state of lights)"""
         _LOGGER.debug("async_update_data started")
         try:
             await self._controller.get_network_state()
