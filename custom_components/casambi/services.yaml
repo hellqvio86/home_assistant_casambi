@@ -1,0 +1,28 @@
+light_turn_on:
+  name: Casambi Turn on
+  description: >
+    Turn on one or more lights and adjust properties of the light, even when
+    they are turned on already.
+  target:
+    entity:
+      domain: light
+      integration: casambi
+  fields:
+    brightness:
+      name: Brightness value
+      description:
+        Number indicating brightness, where 0 turns the light
+        off, 1 is the minimum brightness and 255 is the maximum brightness
+        supported by the light.
+      selector:
+        number:
+          min: 0
+          max: 255
+    distribution:
+      name: Distribution value
+      description:
+        Number indicating light distribution, where 0 is fully up and 255 is fully down.
+      selector:
+        number:
+          min: 0
+          max: 255

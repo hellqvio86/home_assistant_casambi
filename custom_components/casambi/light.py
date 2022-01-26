@@ -45,10 +45,13 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from homeassistant import config_entries, core
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
+
+import voluptuous as vol
+from homeassistant.helpers import entity_platform
 
 from .const import (
     DOMAIN,
@@ -63,6 +66,10 @@ from .const import (
     ATTR_MODEL,
     DEFAULT_NETWORK_TIMEOUT,
     DEFAULT_POLLING_TIME,
+    SERVICE_CASAMBI_LIGHT_TURN_ON,
+    ATTR_SERV_BRIGHTNESS,
+    ATTR_SERV_DISTRIBUTION,
+    ATTR_SERV_ENTITY_ID,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -162,6 +169,21 @@ async def async_setup_entry(
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
 
+    # add entity service to turn on Casambi light
+    platform = entity_platform.async_get_current_platform()
+    platform.async_register_entity_service(
+        SERVICE_CASAMBI_LIGHT_TURN_ON,
+        {
+            vol.Required(ATTR_BRIGHTNESS): vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=255)
+            ),
+            vol.Optional(ATTR_DISTRIBUTION): vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=255)
+            ),
+        },
+        "async_handle_entity_service_light_turn_on",
+    )
+
     return True
 
 
@@ -255,6 +277,57 @@ async def async_setup_platform(
         async_add_entities([casambi_light], True)
 
         casambi_controller.units[casambi_light.unique_id] = casambi_light
+
+    @callback
+    async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
+        """Handle turn on of Casambi light when setup from yaml."""
+        dbg_msg = f"ServiceCall {call.domain}.{call.service}, data: {call.data}"
+        _LOGGER.debug(dbg_msg)
+
+        # Check if entities were selected
+        if not ATTR_SERV_ENTITY_ID in call.data:
+            # service handle currently only supports selection of entities
+            dbg_msg = f"ServiceCall {call.domain}.{call.service}: No entity was specified. Please specify entities instead of areas or devices."
+            _LOGGER.error(dbg_msg)
+
+            return
+
+        # Get parameters
+        _distribution = None
+        _brightness = call.data[ATTR_SERV_BRIGHTNESS]
+        _entity_ids = call.data[ATTR_SERV_ENTITY_ID]
+
+        dbg_msg = f"ServiceCall {call.domain}.{call.service}: data: {call.data}, brightness: {_brightness}, entity_ids: {_entity_ids}"
+
+        # Check if optional attribute distribution has been set
+        if ATTR_SERV_DISTRIBUTION in call.data:
+            _distribution = call.data[ATTR_SERV_DISTRIBUTION]
+            dbg_msg += f", distribution: {_distribution}"
+
+        _LOGGER.debug(dbg_msg)
+
+        _units = hass.data[DOMAIN]["controller"].units
+
+        for _entity_id in _entity_ids:
+            for casambi_light in _units.values():
+                if casambi_light.entity_id == _entity_id:
+                    # entity found
+                    params = {}
+                    params["brightness"] = _brightness
+                    if _distribution is not None:
+                        params["distribution"] = _distribution
+
+                    dbg_msg = f"async_handle_platform_service_light_turn_on: entity found: {_entity_id}, setting params: {params}"
+                    _LOGGER.debug(dbg_msg)
+
+                    await casambi_light.async_turn_on(**params)
+
+    # add platform service to turn on Casambi light
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_CASAMBI_LIGHT_TURN_ON,
+        async_handle_platform_service_light_turn_on,
+    )
 
     return True
 
@@ -663,6 +736,25 @@ class CasambiLight(CoordinatorEntity, LightEntity):
             ATTR_MANUFACTURER: manufacturer,
             ATTR_MODEL: model,
         }
+
+    async def async_handle_entity_service_light_turn_on(self, **kwargs: Any) -> None:
+        """Handle turn on of Casambi light when setup from UI integration."""
+        # Get parameters
+        _brightness = kwargs.get(ATTR_SERV_BRIGHTNESS)
+        _distribution = kwargs.get(ATTR_SERV_DISTRIBUTION, None)
+
+        dbg_msg = f"async_handle_entity_service_light_turn_on: self: {self}, kwargs: {kwargs}, brightness: {_brightness}, distribution: {_distribution}"
+        _LOGGER.debug(dbg_msg)
+
+        params = {}
+        params["brightness"] = _brightness
+        if _distribution is not None:
+            params["distribution"] = _distribution
+
+        dbg_msg = f"async_handle_entity_service_light_turn_on: entity: {self.entity_id}, setting params: {params}"
+        _LOGGER.debug(dbg_msg)
+
+        await self.async_turn_on(**params)
 
     def __repr__(self) -> str:
         """Return the representation."""

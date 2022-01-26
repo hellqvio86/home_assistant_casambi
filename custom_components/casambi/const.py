@@ -21,6 +21,11 @@ ATTR_MANUFACTURER = "manufacturer"
 ATTR_MODEL = "model"
 ATTR_SOFTWARE_VERSION = "sw_version"
 
+SERVICE_CASAMBI_LIGHT_TURN_ON = "light_turn_on"
+ATTR_SERV_BRIGHTNESS = "brightness"
+ATTR_SERV_DISTRIBUTION = "distribution"
+ATTR_SERV_ENTITY_ID = "entity_id"
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
