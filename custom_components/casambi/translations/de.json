@@ -4,11 +4,11 @@
     "step": {
       "user": {
         "title": "Casambi",
-        "description": "Hilfe bei der Einrichtung findest du hier: ,
+        "description": "Hilfe bei der Einrichtung findest du hier: ",
         "data": {
           "email": "Email",
-          "user_password": "User password",
-          "network_password": "Network password",
+          "user_password": "Benitzer Password",
+          "network_password": "Netzwerk Passwort",
           "api_key": "API-Schl\u00fcssel",
           "network_timeout": "Network timeout",
           "scan_interval": "Scan interval"
@@ -16,8 +16,8 @@
       }
     },
     "error": {
-      "auth_user_password":"Invalid user password",
-      "auth_network_password":"Invalid network password"
+      "auth_user_password":"Ungueltiges Benutzer Passwort",
+      "auth_network_password":"Ungueltiges Netzwerk Passwort"
     }
   }
 }
