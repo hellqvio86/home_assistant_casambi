@@ -1,0 +1,23 @@
+{
+  "title": "Casambi",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Casambi",
+        "description": "Hilfe bei der Einrichtung findest du hier: ,
+        "data": {
+          "email": "Email",
+          "user_password": "User password",
+          "network_password": "Network password",
+          "api_key": "API-Schl\u00fcssel",
+          "network_timeout": "Network timeout",
+          "scan_interval": "Scan interval"
+        }
+      }
+    },
+    "error": {
+      "auth_user_password":"Invalid user password",
+      "auth_network_password":"Invalid network password"
+    }
+  }
+}
