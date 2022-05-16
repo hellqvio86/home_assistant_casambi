@@ -3,13 +3,13 @@
   "config": {
     "step": {
       "user": {
-        "title": "Fill in your information",
-        "description": "Enter your Casambi credentials.",
+        "title": "Casambi",
+        "description": "For help on the configuration check the project readme here: https://github.com/hellqvio86/home_assistant_casambi",
         "data": {
           "email": "Email",
           "user_password": "User password",
           "network_password": "Network password",
-          "api_key": "api key",
+          "api_key": "API key",
           "network_timeout": "Network timeout",
           "scan_interval": "Scan interval"
         }
