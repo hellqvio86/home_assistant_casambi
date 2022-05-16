@@ -1,5 +1,9 @@
 # Home assistant Casambi Lights support
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/hellqvio86/home_assistant_casambi) [![hacs_badge](https://img.shields.io/badge/HACS-orange.svg)](https://github.com/custom-components/hacs) ![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/home_assistant_casambi) ![GitHub last commit](https://img.shields.io/github/last-commit/hellqvio86/aiocasambi) ![GitHub](https://img.shields.io/github/license/hellqvio86/home_assistant_casambi)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/hellqvio86/home_assistant_casambi)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
+![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/home_assistant_casambi)
+![GitHub last commit](https://img.shields.io/github/last-commit/hellqvio86/aiocasambi)
+![GitHub](https://img.shields.io/github/license/hellqvio86/home_assistant_casambi)
 
 This is project is a custom component for supporting Casambi Lights in [Home Assistant](https://www.home-assistant.io/). All lights will be automatically discovered. The light state is sent to Home Assistant mainly by websocket, but this integration also polls Casambis REST API periodically. Home Assistant can be integrated with [Google Home](https://www.home-assistant.io/integrations/google_assistant/), [Amazon Alexa](https://www.home-assistant.io/integrations/alexa/) and much more.
 
@@ -21,30 +25,21 @@ These modes are implemented:
 ## Usage
 
 ### Prerequisite
-* Running [Home Assistant](https://www.home-assistant.io/)
+* [Home Assistant](https://www.home-assistant.io/)
 * Request developer api key from Casambi: https://developer.casambi.com/
 * Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
 * Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
 
 ### Installation
 
+#### Installation via HACS (recommended)
+
+1. Setup HACS https://hacs.xyz/
+2. HACS -> Integrations -> `+` -> Casambi -> Install
+
 #### "Manual" Installation
+
 Just place the directory "casambi" in to your 'custom_components' folder.
-
-#### Installation via HACS
-1. Setup HACS https://hacs.xyz/
-2. HACS -> Integrations -> Casambi -> Install
-
-#### Installation via HACS (custom repository)
-Add this repository as custom repository in the HACS store (HACS -> integrations -> custom repositories):
-
-1. Setup HACS https://hacs.xyz/
-2. Go to integrations section.
-3. Click on the 3 dots in the top right corner.
-4. Select "Custom repositories"
-5. Add the URL to the repository.
-6. Select the correct category.
-7. Click the "ADD" button.
 
 ### Configuration
 Add these lines in your configuration.yml
