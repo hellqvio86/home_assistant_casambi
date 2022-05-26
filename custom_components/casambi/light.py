@@ -109,6 +109,12 @@ async def async_setup_entry(
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
+    if user_password == "":
+        user_password = None
+
+    if network_password == "":
+        network_password = None
+
     controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
@@ -216,6 +222,12 @@ async def async_setup_platform(
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
+
+    if user_password == "":
+        user_password = None
+
+    if network_password == "":
+        network_password = None
 
     controller = aiocasambi.Controller(
         email=email,
