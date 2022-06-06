@@ -6,8 +6,6 @@ from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 DOMAIN = "casambi"
 
-WIRE_ID = 9
-
 DEFAULT_NETWORK_TIMEOUT = 300
 DEFAULT_POLLING_TIME = 60
 

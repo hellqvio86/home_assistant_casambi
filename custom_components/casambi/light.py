@@ -56,7 +56,6 @@ from homeassistant.helpers import entity_platform
 
 from .const import (
     DOMAIN,
-    WIRE_ID,
     CONF_CONTROLLER,
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
@@ -122,7 +121,6 @@ async def async_setup_entry(
         api_key=api_key,
         websession=session,
         sslcontext=sslcontext,
-        wire_id=WIRE_ID,
         callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
@@ -236,7 +234,6 @@ async def async_setup_platform(
         api_key=api_key,
         websession=session,
         sslcontext=sslcontext,
-        wire_id=WIRE_ID,
         callback=casambi_controller.signalling_callback,
         network_timeout=network_timeout,
     )
