@@ -130,7 +130,7 @@ async def async_setup_entry(
     try:
         with async_timeout.timeout(10):
             await controller.create_session()
-            await controller.start_websocket()
+            await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error("Connected to casambi but couldn't log in")
@@ -243,7 +243,7 @@ async def async_setup_platform(
     try:
         with async_timeout.timeout(10):
             await controller.create_session()
-            await controller.start_websocket()
+            await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error("Connected to casambi but couldn't log in")
