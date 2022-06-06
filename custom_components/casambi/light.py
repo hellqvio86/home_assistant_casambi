@@ -130,6 +130,7 @@ async def async_setup_entry(
     try:
         with async_timeout.timeout(10):
             await controller.create_session()
+            await controller.initialize()
             await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
@@ -147,8 +148,6 @@ async def async_setup_entry(
     except aiocasambi.AiocasambiException:
         _LOGGER.error("Unknown Casambi communication error occurred")
         return False
-
-    await controller.initialize()
 
     units = controller.get_units()
 
@@ -243,6 +242,7 @@ async def async_setup_platform(
     try:
         with async_timeout.timeout(10):
             await controller.create_session()
+            await controller.initialize()
             await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
@@ -260,8 +260,6 @@ async def async_setup_platform(
     except aiocasambi.AiocasambiException:
         _LOGGER.error("Unknown Casambi communication error occurred")
         return False
-
-    await controller.initialize()
 
     units = controller.get_units()
 
@@ -379,7 +377,13 @@ class CasambiController:
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
         await self._controller.reconnect()
 
-        if self._controller.get_websocket_state() != STATE_RUNNING:
+        all_running = True
+        states = self._controller.get_websocket_states()
+        for state in states:
+            if state != STATE_RUNNING:
+                all_running = False
+
+        if not all_running:
             msg = "async_reconnect: could not connect to casambi. "
             msg += f"trying again in {self._network_retry_timer} seconds"
             _LOGGER.debug(msg)
