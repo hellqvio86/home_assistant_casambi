@@ -66,6 +66,7 @@ Of course you need to make sure you have the secrets available.
 
 ### Troubleshot
 #### Enable logging in your configuration.yml
+Set logging to debug mode for integration and [aiocasambi](https://github.com/hellqvio86/aiocasambi) (library that the integration uses):
 ```
 logger:
   default: info
