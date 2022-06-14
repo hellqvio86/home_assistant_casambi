@@ -134,19 +134,21 @@ async def async_setup_entry(
             await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
-        _LOGGER.error("Connected to casambi but couldn't log in")
+        _LOGGER.error("Integrations UI setup: Connected to casambi but couldn't log in")
         return False
 
     except aiocasambi.Unauthorized:
-        _LOGGER.error("Connected to casambi but not registered")
+        _LOGGER.error("Integrations UI setup: Connected to casambi but not registered")
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error("Error connecting to the Casambi")
+        _LOGGER.error("Integrations UI setup: Error connecting to the Casambi")
         return False
 
     except aiocasambi.AiocasambiException:
-        _LOGGER.error("Unknown Casambi communication error occurred")
+        _LOGGER.error(
+            "Integrations UI setup: Unknown Casambi communication error occurred!"
+        )
         return False
 
     units = controller.get_units()
@@ -246,19 +248,25 @@ async def async_setup_platform(
             await controller.start_websockets()
 
     except aiocasambi.LoginRequired:
-        _LOGGER.error("Connected to casambi but couldn't log in")
+        _LOGGER.error(
+            "configuration.yaml setup: Connected to casambi but couldn't log in"
+        )
         return False
 
     except aiocasambi.Unauthorized:
-        _LOGGER.error("Connected to casambi but not registered")
+        _LOGGER.error(
+            "configuration.yaml setup: Connected to casambi but not registered"
+        )
         return False
 
     except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error("Error connecting to the Casambi")
+        _LOGGER.error("configuration.yaml setup: Error connecting to the Casambi")
         return False
 
     except aiocasambi.AiocasambiException:
-        _LOGGER.error("Unknown Casambi communication error occurred")
+        _LOGGER.error(
+            "configuration.yaml setup: Unknown Casambi communication error occurred!"
+        )
         return False
 
     units = controller.get_units()
