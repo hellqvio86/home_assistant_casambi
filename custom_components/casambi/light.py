@@ -141,8 +141,16 @@ async def async_setup_entry(
         _LOGGER.error("Integrations UI setup: Connected to casambi but not registered")
         return False
 
-    except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error("Integrations UI setup: Error connecting to the Casambi")
+    except aiocasambi.RequestError as err:
+        _LOGGER.error(
+            f"Integrations UI setup: Error connecting to the Casambi, caught aiocasambi.RequestError, error message: {str(err)}"
+        )
+        return False
+
+    except asyncio.TimeoutError:
+        _LOGGER.error(
+            "Integrations UI setup: Error connecting to the Casambi, caught asyncio.TimeoutError"
+        )
         return False
 
     except aiocasambi.AiocasambiException:
@@ -259,8 +267,16 @@ async def async_setup_platform(
         )
         return False
 
-    except (asyncio.TimeoutError, aiocasambi.RequestError):
-        _LOGGER.error("configuration.yaml setup: Error connecting to the Casambi")
+    except aiocasambi.RequestError as err:
+        _LOGGER.error(
+            f"configuration.yaml setup: Error connecting to the Casambi, caught aiocasambi.RequestError, error message: {str(err)}"
+        )
+        return False
+
+    except asyncio.TimeoutError:
+        _LOGGER.error(
+            "configuration.yaml setup: Error connecting to the Casambi, caught asyncio.TimeoutError"
+        )
         return False
 
     except aiocasambi.AiocasambiException:
