@@ -22,6 +22,9 @@ These modes are implemented:
 * rgb
 * rgbw
 
+### Distribution/Vertical
+Distribution/Vertical is supported by using **casambi.light_turn_on** service, see screenshot below:
+![Screenshot](/misc/docs/images/screenshot_casambi_turn_on_light_service.png)
 ## Usage
 
 ### Prerequisite
