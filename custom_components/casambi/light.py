@@ -128,7 +128,7 @@ async def async_setup_entry(
     casambi_controller.controller = controller
 
     try:
-        with async_timeout.timeout(10):
+        with async_timeout.timeout(DEFAULT_NETWORK_TIMEOUT):
             await controller.create_session()
             await controller.initialize()
             await controller.start_websockets()
@@ -250,7 +250,7 @@ async def async_setup_platform(
     casambi_controller.controller = controller
 
     try:
-        with async_timeout.timeout(10):
+        with async_timeout.timeout(DEFAULT_NETWORK_TIMEOUT):
             await controller.create_session()
             await controller.initialize()
             await controller.start_websockets()
