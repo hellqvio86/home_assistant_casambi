@@ -452,10 +452,10 @@ class CasambiController:
                 if unit:
                     self.units[key].process_update(value)
                 else:
-                    error_msg = "signalling_callback: unit is null!"
-                    error_msg += f"key: {key} signal: {signal} data: {data} "
-                    error_msg += f"units: {pformat(self.units)}"
-                    _LOGGER.error(error_msg)
+                    warn_msg = "signalling_callback: unit is None!"
+                    warn_msg += f"key: {key} signal: {signal} data: {data} "
+                    warn_msg += f"units: {pformat(self.units)}"
+                    _LOGGER.warning(warn_msg)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
