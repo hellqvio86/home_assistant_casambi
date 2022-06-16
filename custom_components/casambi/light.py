@@ -8,6 +8,7 @@ import ssl
 import asyncio
 
 from datetime import timedelta
+from pprint import pformat
 from typing import Any, Dict, Optional
 
 import async_timeout
@@ -452,7 +453,8 @@ class CasambiController:
                     self.units[key].process_update(value)
                 else:
                     error_msg = "signalling_callback: unit is null!"
-                    error_msg += f"key: {key} signal: {signal} data: {data}"
+                    error_msg += f"key: {key} signal: {signal} data: {data} "
+                    error_msg += f"units: {pformat(self.units)}"
                     _LOGGER.error(error_msg)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
