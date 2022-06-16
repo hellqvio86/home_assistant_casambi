@@ -66,6 +66,7 @@ from .const import (
     DEFAULT_NETWORK_TIMEOUT,
     DEFAULT_POLLING_TIME,
     SERVICE_CASAMBI_LIGHT_TURN_ON,
+    MAX_START_UP_TIME,
     ATTR_SERV_BRIGHTNESS,
     ATTR_SERV_DISTRIBUTION,
     ATTR_SERV_ENTITY_ID,
@@ -128,7 +129,7 @@ async def async_setup_entry(
     casambi_controller.controller = controller
 
     try:
-        with async_timeout.timeout(DEFAULT_NETWORK_TIMEOUT):
+        with async_timeout.timeout(MAX_START_UP_TIME):
             await controller.create_session()
             await controller.initialize()
             await controller.start_websockets()
@@ -250,7 +251,7 @@ async def async_setup_platform(
     casambi_controller.controller = controller
 
     try:
-        with async_timeout.timeout(DEFAULT_NETWORK_TIMEOUT):
+        with async_timeout.timeout(MAX_START_UP_TIME):
             await controller.create_session()
             await controller.initialize()
             await controller.start_websockets()
