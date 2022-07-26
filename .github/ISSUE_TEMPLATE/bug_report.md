@@ -25,7 +25,7 @@ A clear and concise description of what you expected to happen.
 
 **Debug logs**
 
-Provide debug logs for integration and aiocasambi, remove credentials. Enable them through *configuration.yaml* e.g:
+Provide debug logs for integration and aiocasambi in plain text, remove credentials. Enable them through *configuration.yaml* e.g:
 
 ```
 logger:
