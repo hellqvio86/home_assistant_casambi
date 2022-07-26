@@ -1,12 +1,12 @@
 {
   "domain": "casambi",
   "name": "casambi",
-  "version": "0.87",
+  "version": "0.88",
   "config_flow": true,
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
   "issue_tracker": "https://github.com/hellqvio86/home_assistant_casambi/issues",
   "requirements": [
-    "aiocasambi==0.242"
+    "aiocasambi==0.243"
   ],
   "ssdp": [],
   "zeroconf": [],
