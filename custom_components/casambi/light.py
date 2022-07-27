@@ -176,9 +176,7 @@ async def async_setup_entry(
     await coordinator.async_refresh()
 
     for unit in units:
-        # Ignore things like:
-        #  'type': 'BatterySwitch'
-        if unit.type != "Luminaire":
+        if not unit.is_light():
             continue
 
         casambi_light = CasambiLight(
@@ -307,7 +305,7 @@ async def async_setup_platform(
     await coordinator.async_refresh()
 
     for unit in units:
-        if unit.type != "Luminaire":
+        if not unit.is_light():
             continue
 
         casambi_light = CasambiLight(
