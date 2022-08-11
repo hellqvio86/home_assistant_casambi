@@ -6,6 +6,10 @@ class CasambiException(HomeAssistantError):
     """Base class for Casambi exceptions."""
 
 
+class ConfigurationError(CasambiException):
+    """Invalid configuration"""
+
+
 class AlreadyConfigured(CasambiException):
     """Controller is already configured."""
 

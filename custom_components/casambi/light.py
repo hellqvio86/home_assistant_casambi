@@ -73,6 +73,8 @@ from .const import (
     ATTR_SERV_ENTITY_ID,
 )
 
+from .errors import ConfigurationError
+
 _LOGGER = logging.getLogger(__name__)
 
 CASAMBI_CONTROLLER = None
@@ -85,8 +87,12 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
-    user_password = config[CONF_USER_PASSWORD]
-    network_password = config[CONF_NETWORK_PASSWORD]
+    user_password = None
+    if CONF_USER_PASSWORD in config:
+        user_password = config[CONF_USER_PASSWORD]
+    network_password = None
+    if CONF_NETWORK_PASSWORD in config:
+        network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
 
@@ -115,6 +121,11 @@ async def async_setup_entry(
 
     if network_password == "":
         network_password = None
+
+    if not (user_password) and not (network_password):
+        raise ConfigurationError(
+            f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
+        )
 
     controller = aiocasambi.Controller(
         email=email,
@@ -210,8 +221,12 @@ async def async_setup_platform(
     """
     Setup Casambi platform
     """
-    user_password = config[CONF_USER_PASSWORD]
-    network_password = config[CONF_NETWORK_PASSWORD]
+    user_password = None
+    if CONF_USER_PASSWORD in config:
+        user_password = config[CONF_USER_PASSWORD]
+    network_password = None
+    if CONF_NETWORK_PASSWORD in config:
+        network_password = config[CONF_NETWORK_PASSWORD]
     email = config[CONF_EMAIL]
     api_key = config[CONF_API_KEY]
 
@@ -240,6 +255,11 @@ async def async_setup_platform(
 
     if network_password == "":
         network_password = None
+
+    if not (user_password) and not (network_password):
+        raise ConfigurationError(
+            f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
+        )
 
     controller = aiocasambi.Controller(
         email=email,

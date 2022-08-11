@@ -30,8 +30,8 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_USER_PASSWORD): cv.string,
-                vol.Required(CONF_NETWORK_PASSWORD): cv.string,
+                vol.Optional(CONF_USER_PASSWORD): cv.string,
+                vol.Optional(CONF_NETWORK_PASSWORD): cv.string,
                 vol.Required(CONF_EMAIL): cv.string,
                 vol.Required(CONF_API_KEY): cv.string,
                 vol.Optional(
