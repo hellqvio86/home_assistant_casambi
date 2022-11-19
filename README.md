@@ -13,7 +13,7 @@ https://github.com/olofhellqvist/aiocasambi
 ## Not supported devices
 | OEM | Fixture Model | Comment |
 | ------------- | ------------- | -----|
-| OLIGO  | GRACE PL HA TW  | Integration do not support two dimmers, support for controls': [{'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}, {'name': 'dimmer1', 'type': 'Dimmer', 'value': 0.0}, hardware needed for development|
+| OLIGO  | GRACE PL HA TW  | Integration do not support two dimmers, hardware is needed in order to develop support for controls': [{'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}, {'name': 'dimmer1', 'type': 'Dimmer', 'value': 0.0}|
 
 
 ## Supported devices
