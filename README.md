@@ -11,10 +11,11 @@ It uses a separate library (also written by me), link to library project:
 https://github.com/olofhellqvist/aiocasambi
 
 ## Not supported devices
+
 | OEM | Fixture Model | Comment |
 | ------------- | ------------- | -----|
 | OLIGO  | GRACE PL HA TW  | Integration do not support two dimmers, hardware is needed in order to develop support for controls': [{'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}, {'name': 'dimmer1', 'type': 'Dimmer', 'value': 0.0}|
-
+| OLIGO | CURVED| Support for light with two dimmers (up and down light) is currently limited. Both dimmers are controlled simultaneously with one light entity in Home Assistant, no separate control implemented as of today (see #54). |
 
 ## Supported devices
 
