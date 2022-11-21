@@ -4,14 +4,24 @@
     "step": {
       "user": {
         "title": "Casambi",
-        "description": "Hilfe bei der Einrichtung findest du hier: https://github.com/hellqvio86/home_assistant_casambi",
+        "description": "[Beantrage einen API Schl\u00fcssel](https://developer.casambi.com/#documentation) von Casambi.",
+        "data": {
+          "api_key": "API-Schl\u00fcssel"
+        }
+      },
+      "site_user": {
+        "title": "Casambi",
+        "description": "[Erstelle eine 'Site'](https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site) und gib hier die Zugangsdaten für den Site Benutzer an.",
         "data": {
           "email": "Email",
-          "user_password": "Benutzer Password",
-          "network_password": "Netzwerk Passwort",
-          "api_key": "API-Schl\u00fcssel",
-          "network_timeout": "Netzwerk Zeit\u00fcberschreitung",
-          "scan_interval": "Scan Intervall"
+          "user_password": "Benutzer Passwort"
+        }
+      },
+      "network": {
+        "title": "Casambi",
+        "description": "[Aktiviere ein Gateway](https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network) für dein Netzwerk und gib hier das Netzwerk Passwort an.",
+        "data": {
+          "network_password": "Netzwerk Passwort"
         }
       }
     },
