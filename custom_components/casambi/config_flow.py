@@ -145,7 +145,7 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.debug(f"async_step_network user_input: {user_input}")
             try:
                 await validate_network_password(
-                    self.data[CONF_USER_PASSWORD],
+                    self.data[CONF_EMAIL],
                     self.data[CONF_API_KEY],
                     user_input[CONF_NETWORK_PASSWORD],
                     self.hass,
