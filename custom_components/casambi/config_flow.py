@@ -85,27 +85,68 @@ async def validate_network_password(
 class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Github Custom config flow."""
 
-    data: Optional[Dict[str, Any]]
+    data: Optional[Dict[str, Any]] = {}
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
             _LOGGER.debug(f"async_step_user user_input: {user_input}")
+            self.data[CONF_API_KEY] = user_input[CONF_API_KEY]
+
+            # Return the form of the next step.
+            return await self.async_step_site_user()
+
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema({
+                vol.Required(CONF_API_KEY): cv.string,
+            }),
+            errors=errors,
+            last_step=False,
+        )
+
+
+    async def async_step_site_user(self, user_input: Optional[Dict[str, Any]] = None):
+        """Invoked when a user has provided the API key via the user interface."""
+        errors: Dict[str, str] = {}
+        if user_input is not None:
+            _LOGGER.debug(f"async_step_site_user user_input: {user_input}")
             try:
                 await validate_user_password(
                     user_input[CONF_EMAIL],
-                    user_input[CONF_API_KEY],
+                    self.data[CONF_API_KEY],
                     user_input[CONF_USER_PASSWORD],
                     self.hass,
                 )
             except ValueError:
                 errors["base"] = "auth_user_password"
 
+            if not errors:
+                self.data[CONF_EMAIL] = user_input[CONF_EMAIL]
+                self.data[CONF_USER_PASSWORD] = user_input[CONF_USER_PASSWORD]
+                # Return the form of the next step.
+                return await self.async_step_network()
+
+        return self.async_show_form(
+            step_id="site_user",
+            data_schema=vol.Schema({
+                vol.Required(CONF_EMAIL): cv.string,
+                vol.Required(CONF_USER_PASSWORD): cv.string,
+            }),
+            errors=errors,
+            last_step=False,
+        )
+
+    async def async_step_network(self, user_input: Optional[Dict[str, Any]] = None):
+        """Invoked when a user has provided the API key and site credentials via the user interface."""
+        errors: Dict[str, str] = {}
+        if user_input is not None:
+            _LOGGER.debug(f"async_step_network user_input: {user_input}")
             try:
                 await validate_network_password(
-                    user_input[CONF_EMAIL],
-                    user_input[CONF_API_KEY],
+                    self.data[CONF_USER_PASSWORD],
+                    self.data[CONF_API_KEY],
                     user_input[CONF_NETWORK_PASSWORD],
                     self.hass,
                 )
@@ -113,12 +154,15 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "auth_network_password"
 
             if not errors:
-                # Input is valid, set data.
-                self.data = user_input
-
+                self.data[CONF_NETWORK_PASSWORD] = user_input[CONF_NETWORK_PASSWORD]
                 # Return the form of the next step.
                 return self.async_create_entry(title="Casambi", data=self.data)
 
         return self.async_show_form(
-            step_id="user", data_schema=AUTH_SCHEMA, errors=errors
+            step_id="network",
+            data_schema=vol.Schema({
+                vol.Required(CONF_NETWORK_PASSWORD): cv.string,
+            }),
+            errors=errors,
+            last_step=True,
         )
