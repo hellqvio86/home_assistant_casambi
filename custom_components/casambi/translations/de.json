@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Casambi",
-        "description": "[Beantrage einen API Schl\u00fcssel](https://developer.casambi.com/#documentation) von Casambi.",
+        "description": "[Beantrage einen API Schl\u00fcssel](https://developer.casambi.com/#documentation) bei Casambi.",
         "data": {
           "api_key": "API-Schl\u00fcssel"
         }
@@ -19,7 +19,7 @@
       },
       "network": {
         "title": "Casambi",
-        "description": "[Aktiviere ein Gateway](https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network) für dein Netzwerk und gib hier das Netzwerk Passwort an.",
+        "description": "[Konfiguriere ein Gateway](https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network) für dein Netzwerk und gib hier das Netzwerk Passwort an.",
         "data": {
           "network_password": "Netzwerk Passwort"
         }
