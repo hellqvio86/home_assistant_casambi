@@ -116,7 +116,7 @@ async def async_setup_entry(
         async_create_issue(
             hass=hass,
             domain=DOMAIN,
-            issue_id=f"restart_required_casambi",x
+            issue_id=f"restart_required_casambi",
             is_fixable=True,
             issue_domain=DOMAIN,
             severity=IssueSeverity.WARNING,
