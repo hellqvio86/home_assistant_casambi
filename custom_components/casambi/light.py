@@ -50,6 +50,7 @@ from homeassistant import config_entries, core
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 import voluptuous as vol
@@ -111,6 +112,19 @@ async def async_setup_entry(
     if CONF_CONTROLLER in hass.data[DOMAIN]:
         dbg_msg = "async_setup_platform CasambiController already created!"
         _LOGGER.debug(dbg_msg)
+
+        async_create_issue(
+            hass=hass,
+            domain=DOMAIN,
+            issue_id=f"restart_required_casambi",x
+            is_fixable=True,
+            issue_domain=DOMAIN,
+            severity=IssueSeverity.WARNING,
+            translation_key="restart_required",
+            translation_placeholders={
+                "name": "Casambi",
+            },
+        )
         return
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
