@@ -29,5 +29,18 @@
       "auth_user_password":"Ung\u00fcltiges Benutzer Passwort",
       "auth_network_password":"Ung\u00fcltiges Netzwerk Passwort"
     }
+  },
+  "issues": {
+    "restart_required": {
+      "title": "Neustart notwendig",
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "title": "Neustart notwendig",
+            "description": "Um deine Lampen zu erkennen ist ein Neustart von Home Assistant notwendig, klicke auf absenden um jetzt neuzustarten."
+          }
+        }
+      }
+    }
   }
 }
