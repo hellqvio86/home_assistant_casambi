@@ -34,7 +34,7 @@ class RestartRequiredFixFlow(RepairsFlow):
         return self.async_show_form(
             step_id="confirm_restart",
             data_schema=vol.Schema({}),
-            description_placeholders={"name": "Casambi"},
+            description_placeholders={},
         )
 
 
