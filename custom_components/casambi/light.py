@@ -121,9 +121,7 @@ async def async_setup_entry(
             issue_domain=DOMAIN,
             severity=IssueSeverity.WARNING,
             translation_key="restart_required",
-            translation_placeholders={
-                "name": "Casambi",
-            },
+            translation_placeholders={},
         )
         return
 
