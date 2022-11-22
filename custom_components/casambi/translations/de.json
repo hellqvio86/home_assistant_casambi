@@ -37,7 +37,7 @@
         "step": {
           "confirm_restart": {
             "title": "Neustart notwendig",
-            "description": "Um deine Lampen zu erkennen ist ein Neustart von Home Assistant notwendig, klicke auf absenden um jetzt neuzustarten."
+            "description": "Home Assistant muss neugestartet werden um deine Lampen zu erkennen, klicke auf absenden um jetzt neuzustarten."
           }
         }
       }
