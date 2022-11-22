@@ -9,7 +9,7 @@ import asyncio
 
 from datetime import timedelta
 from pprint import pformat
-from typing import Any, Dict, Optional
+from typing import Optional
 
 import async_timeout
 import aiocasambi
@@ -25,15 +25,6 @@ from aiocasambi.consts import (
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
-    SUPPORT_BRIGHTNESS,
-    LightEntity,
-    ATTR_COLOR_TEMP,
-    ATTR_RGB_COLOR,
-    ATTR_RGBW_COLOR,
-    COLOR_MODE_BRIGHTNESS,
-    COLOR_MODE_COLOR_TEMP,
-    COLOR_MODE_RGB,
-    COLOR_MODE_RGBW,
 )
 
 try:
@@ -41,16 +32,12 @@ try:
 except ImportError:
     ATTR_DISTRIBUTION = "distribution"
 
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from homeassistant import config_entries, core
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.const import ATTR_NAME, CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 from homeassistant.helpers import aiohttp_client
+from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 import voluptuous as vol
 from homeassistant.helpers import entity_platform
@@ -61,9 +48,6 @@ from .const import (
     CONF_USER_PASSWORD,
     CONF_NETWORK_PASSWORD,
     CONF_NETWORK_TIMEOUT,
-    ATTR_IDENTIFIERS,
-    ATTR_MANUFACTURER,
-    ATTR_MODEL,
     DEFAULT_NETWORK_TIMEOUT,
     DEFAULT_POLLING_TIME,
     SERVICE_CASAMBI_LIGHT_TURN_ON,
@@ -82,8 +66,8 @@ CASAMBI_CONTROLLER = None
 
 
 async def async_setup_entry(
-    hass: core.HomeAssistant,
-    config_entry: config_entries.ConfigEntry,
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
     async_add_entities,
 ):
     """Setup sensors from a config entry created in the integrations UI."""
