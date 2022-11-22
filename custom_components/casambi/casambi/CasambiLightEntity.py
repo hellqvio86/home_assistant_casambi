@@ -1,32 +1,13 @@
 """
 Support for Casambi lights.
-For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/@todo
 """
 import logging
-import ssl
-import asyncio
 
-from datetime import timedelta
-from pprint import pformat
-from typing import Any, Dict, Optional
-
-import async_timeout
-import aiocasambi
-
-from aiocasambi.consts import (
-    SIGNAL_DATA,
-    STATE_RUNNING,
-    SIGNAL_CONNECTION_STATE,
-    STATE_DISCONNECTED,
-    STATE_STOPPED,
-    SIGNAL_UNIT_PULL_UPDATE,
-)
+from typing import Any, Optional
 
 from homeassistant.components.light import (
-    ATTR_BRIGHTNESS,
-    SUPPORT_BRIGHTNESS,
     LightEntity,
+    ATTR_BRIGHTNESS,
     ATTR_COLOR_TEMP,
     ATTR_RGB_COLOR,
     ATTR_RGBW_COLOR,
@@ -34,6 +15,7 @@ from homeassistant.components.light import (
     COLOR_MODE_COLOR_TEMP,
     COLOR_MODE_RGB,
     COLOR_MODE_RGBW,
+    SUPPORT_BRIGHTNESS,
 )
 
 try:
@@ -41,96 +23,16 @@ try:
 except ImportError:
     ATTR_DISTRIBUTION = "distribution"
 
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
-
-from homeassistant import config_entries, core
-from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.const import ATTR_NAME
-from homeassistant.helpers import aiohttp_client
-from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
-
-import voluptuous as vol
-from homeassistant.helpers import entity_platform
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from ..const import (
-    DOMAIN,
-    CONF_CONTROLLER,
-    CONF_USER_PASSWORD,
-    CONF_NETWORK_PASSWORD,
-    CONF_NETWORK_TIMEOUT,
-    ATTR_IDENTIFIERS,
-    ATTR_MANUFACTURER,
-    ATTR_MODEL,
-    DEFAULT_NETWORK_TIMEOUT,
-    DEFAULT_POLLING_TIME,
-    SERVICE_CASAMBI_LIGHT_TURN_ON,
-    MAX_START_UP_TIME,
     ATTR_SERV_BRIGHTNESS,
     ATTR_SERV_DISTRIBUTION,
-    ATTR_SERV_ENTITY_ID,
 )
-from ..errors import ConfigurationError
+
+from .CasambiEntity import CasambiEntity
 
 _LOGGER = logging.getLogger(__name__)
-
-
-
-class CasambiEntity(Entity):
-    """Defines a Casambi Entity."""
-
-    def __init__(self, unit, controller, hass):
-        """Initialize Casambi Entity."""
-        self.unit = unit
-        self.controller = controller
-        self.hass = hass
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return self.unit.name
-
-    @property
-    def unique_id(self) -> str:
-        """Return the unique ID for this sensor."""
-        return self.unit.unique_id
-
-    @property
-    def model(self):
-        """Return the model for this sensor."""
-        if self.unit.fixture_model:
-            return self.unit.fixture_model
-        return "Casambi"
-
-    @property
-    def brand(self):
-        """Return the brand for this sensor."""
-        if self.unit.oem:
-            return self.unit.oem
-        return "Casambi"
-
-    @property
-    def device_info(self) -> Dict[str, Any]:
-        """Return device information about this Casambi Key Light."""
-        return {
-            ATTR_IDENTIFIERS: {(DOMAIN, self.unique_id)},
-            ATTR_NAME: self.unit.name,
-            ATTR_MANUFACTURER: self.brand,
-            ATTR_MODEL: self.model,
-        }
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.unit.online
-
-    @property
-    def should_poll(self):
-        """Disable polling by returning False"""
-        return False
 
 
 class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
