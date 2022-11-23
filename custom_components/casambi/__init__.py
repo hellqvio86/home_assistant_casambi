@@ -25,6 +25,9 @@ async def async_setup_entry(
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(entry, "light")
     )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "binary_sensor")
+    )
     return True
 
 
@@ -42,6 +45,7 @@ async def async_unload_entry(
     unload_ok = all(
         await asyncio.gather(
             *[hass.config_entries.async_forward_entry_unload(entry, "light")]
+            *[hass.config_entries.async_forward_entry_unload(entry, "binary_sensor")]
         )
     )
     # Remove options_update_listener.
