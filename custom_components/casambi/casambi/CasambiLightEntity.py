@@ -297,7 +297,9 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         _brightness = kwargs.get(ATTR_SERV_BRIGHTNESS)
         _distribution = kwargs.get(ATTR_SERV_DISTRIBUTION, None)
 
-        dbg_msg = f"async_handle_entity_service_light_turn_on: self: {self}, kwargs: {kwargs}, brightness: {_brightness}, distribution: {_distribution}"
+        dbg_msg = f"async_handle_entity_service_light_turn_on: self: {self}, "
+        dbg_msg += f"kwargs: {kwargs}, brightness: {_brightness}, "
+        dbg_msg += f"distribution: {_distribution}"
         _LOGGER.debug(dbg_msg)
 
         params = {}
@@ -305,7 +307,8 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         if _distribution is not None:
             params["distribution"] = _distribution
 
-        dbg_msg = f"async_handle_entity_service_light_turn_on: entity: {self.entity_id}, setting params: {params}"
+        dbg_msg = "async_handle_entity_service_light_turn_on: entity: "
+        dbg_msg += f"{self.entity_id}, setting params: {params}"
         _LOGGER.debug(dbg_msg)
 
         await self.async_turn_on(**params)
