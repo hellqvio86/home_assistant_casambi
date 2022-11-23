@@ -1,7 +1,7 @@
 {
   "domain": "casambi",
   "name": "casambi",
-  "version": "0.103",
+  "version": "0.104",
   "config_flow": true,
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
   "issue_tracker": "https://github.com/hellqvio86/home_assistant_casambi/issues",
