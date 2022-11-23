@@ -387,7 +387,7 @@ async def async_setup_platform(
 
 
 class CasambiController:
-    """Manages a single UniFi Controller."""
+    """Manages a single Casambi Controller."""
 
     def __init__(self, hass, network_retry_timer=30, units={}):
         """Initialize the system."""
