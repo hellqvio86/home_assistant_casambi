@@ -11,15 +11,15 @@ _ENTITY_SUFFIX = "Status"
 
 class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
-        _LOGGER.debug(f"Casambi {name_suffix} binary sensor - init - start")
+        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - start")
 
         self._hass = hass
-        self._attr_icon = icon
+        #self._attr_icon = icon
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_is_on = False
         CasambiBinarySensorEntity.__init__(self, unit, controller, hass, _ENTITY_SUFFIX)
 
-        _LOGGER.debug(f"Casambi {name_suffix} binary sensor - init - end")
+        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - end")
 
     @property
     def entity_category(self):
