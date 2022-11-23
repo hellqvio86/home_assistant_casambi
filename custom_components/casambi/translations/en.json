@@ -29,5 +29,18 @@
       "auth_user_password":"Invalid user password",
       "auth_network_password":"Invalid network password"
     }
+  },
+  "issues": {
+    "restart_required": {
+      "title": "Restart required",
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "title": "Restart required",
+            "description": "Restart of Home Assistant is required to detect your lights, click submit to restart now."
+          }
+        }
+      }
+    }
   }
 }
