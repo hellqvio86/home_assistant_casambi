@@ -25,7 +25,7 @@ async def async_setup_entry(
 
     # Forward the setup to the sensor platform.
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, Platform.LIGHT")
+        hass.config_entries.async_forward_entry_setup(entry, Platform.LIGHT)
     )
     return True
 
