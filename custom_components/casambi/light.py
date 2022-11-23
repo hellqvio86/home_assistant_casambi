@@ -9,7 +9,6 @@ import asyncio
 
 from datetime import timedelta
 from pprint import pformat
-from typing import Optional
 
 import async_timeout
 import aiocasambi
@@ -101,7 +100,7 @@ async def async_setup_entry(
         async_create_issue(
             hass=hass,
             domain=DOMAIN,
-            issue_id=f"restart_required_casambi",
+            issue_id="restart_required_casambi",
             is_fixable=True,
             issue_domain=DOMAIN,
             severity=IssueSeverity.WARNING,
@@ -499,4 +498,3 @@ class CasambiController:
             # Update units that is specified
             for unit in data:
                 self.update_unit_state(unit)
-
