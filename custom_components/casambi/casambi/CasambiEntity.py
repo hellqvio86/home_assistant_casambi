@@ -8,12 +8,7 @@ from typing import Any, Dict
 from homeassistant.const import ATTR_NAME
 from homeassistant.helpers.entity import DeviceInfo, Entity
 
-from ..const import (
-    DOMAIN,
-    ATTR_IDENTIFIERS,
-    ATTR_MANUFACTURER,
-    ATTR_MODEL,
-)
+from ..const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +54,8 @@ class CasambiEntity(Entity):
             name = self.unit.name,
             manufacturer = self.brand,
             model = self.model,
-            sw_version = self.unit.firmwareVersion,
+            # TODO requires https://github.com/hellqvio86/aiocasambi/pull/19
+            #sw_version = self.unit.firmwareVersion,
         )
 
     @property
