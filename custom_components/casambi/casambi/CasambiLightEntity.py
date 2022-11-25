@@ -42,6 +42,7 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         """Initialize Casambi Key Light."""
         CasambiEntity.__init__(self, unit, controller, hass)
         CoordinatorEntity.__init__(self, coordinator)
+
         self.idx = self.unique_id
         self._brightness: Optional[int] = None
         self._distribution: Optional[int] = None
