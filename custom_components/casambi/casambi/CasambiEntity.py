@@ -55,7 +55,7 @@ class CasambiEntity(Entity):
             manufacturer = self.brand,
             model = self.model,
             # TODO requires https://github.com/hellqvio86/aiocasambi/pull/19
-            #sw_version = self.unit.firmwareVersion,
+            sw_version = self.unit.firmwareVersion,
         )
 
     @property
