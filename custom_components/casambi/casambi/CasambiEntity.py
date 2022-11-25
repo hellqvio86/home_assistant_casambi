@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict
 
 from homeassistant.const import ATTR_NAME
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from ..const import (
     DOMAIN,
@@ -52,14 +52,15 @@ class CasambiEntity(Entity):
         return "Casambi"
 
     @property
-    def device_info(self) -> Dict[str, Any]:
+    def device_info(self) -> DeviceInfo:
         """Return device information about this Casambi Key Light."""
-        return {
-            ATTR_IDENTIFIERS: {(DOMAIN, self.unique_id)},
-            ATTR_NAME: self.unit.name,
-            ATTR_MANUFACTURER: self.brand,
-            ATTR_MODEL: self.model,
-        }
+        return DeviceInfo(
+            identifiers = {(DOMAIN, self.unit.unique_id)},
+            name = self.unit.name,
+            manufacturer = self.brand,
+            model = self.model,
+            sw_version = self.unit.firmwareVersion,
+        )
 
     @property
     def available(self) -> bool:
