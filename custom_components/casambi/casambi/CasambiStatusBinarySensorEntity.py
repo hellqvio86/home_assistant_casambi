@@ -7,24 +7,39 @@ from .CasambiBinarySensorEntity import CasambiBinarySensorEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-_ENTITY_SUFFIX = "Status"
 
 class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
-        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - start")
+        _LOGGER.debug(f"Casambi status binary sensor - init - start")
 
-        self._hass = hass
-        #self._attr_icon = icon
-        self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
-        self._attr_is_on = False
-        CasambiBinarySensorEntity.__init__(self, unit, controller, hass, _ENTITY_SUFFIX)
+        CasambiBinarySensorEntity.__init__(self, unit, controller, hass,
+            "Status", BinarySensorDeviceClass.CONNECTIVITY)
 
-        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - end")
+        # self._attr_is_on = False
+        self._attr_state = self.unit.online
+
+        _LOGGER.debug(f"Casambi status binary sensor - init - end")
 
     @property
     def entity_category(self):
-        return EntityCategory.DIAGNOSTICS
+        return EntityCategory.DIAGNOSTIC
+
+    # @property
+    # def state(self):
+    #     return self.controller.units[self._unit_unique_id].online
+
+    async def async_update(self) -> None:
+        """Update Casambi entity."""
+        self._attr_state = self.unit.online
+        _LOGGER.debug(f"async_update {self}")
+
+    def process_update(self, data):
+        """Process callback message, update home assistant light state"""
+        _LOGGER.debug(f"process_update: self: {self} data: {data}")
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            self.async_schedule_update_ha_state(True)
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"<Casambi {_ENTITY_SUFFIX} binary sensor {self.unit.name}: unit={self.unit}"
+        return f"<Casambi status binary sensor {self.unit.name}: unit={self.unit}"
