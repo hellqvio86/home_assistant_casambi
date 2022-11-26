@@ -59,6 +59,8 @@ class CasambiController:
             # Need to reconnect, session is invalid
             await self.async_reconnect()
 
+        self.update_all_lights()
+
     async def async_reconnect(self):
         """
         Reconnect to the Internet API

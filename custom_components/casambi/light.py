@@ -200,9 +200,6 @@ async def async_setup_entry(
         "async_handle_entity_service_light_turn_on",
     )
 
-    # Force a state update in HA for all lights
-    # casambi_controller.update_all_lights()
-
     return True
 
 
@@ -325,9 +322,6 @@ async def async_setup_platform(
         async_add_entities([casambi_light], True)
 
         casambi_controller.lights[casambi_light.unique_id] = casambi_light
-
-    # Force a state update in HA for all lights
-    # casambi_controller.update_all_lights()
 
     @callback
     async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
