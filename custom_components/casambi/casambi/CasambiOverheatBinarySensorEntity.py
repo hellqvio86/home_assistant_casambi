@@ -6,20 +6,17 @@ from .CasambiBinarySensorEntity import CasambiBinarySensorEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-_ENTITY_SUFFIX = "Overheat"
+NAME = "Overheat"
 
 class CasambiOverheatBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
-        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - start")
+        _LOGGER.debug(f"Casambi {NAME} binary sensor - init - start")
 
-        self._hass = hass
-        #self._attr_icon = icon
-        self._attr_device_class = BinarySensorDeviceClass.HEAT
-        self._attr_is_on = False
-        CasambiBinarySensorEntity.__init__(self, unit, controller, hass, _ENTITY_SUFFIX)
+        CasambiBinarySensorEntity.__init__(self, unit, controller, hass,
+            NAME, BinarySensorDeviceClass.HEAT)
 
-        _LOGGER.debug(f"Casambi {_ENTITY_SUFFIX} binary sensor - init - end")
+        _LOGGER.debug(f"Casambi {NAME} binary sensor - init - end")
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"<Casambi {_ENTITY_SUFFIX} binary sensor {self.unit.name}: unit={self.unit}"
+        return f"<Casambi {NAME} binary sensor {self.unit.name}: unit={self.unit}"
