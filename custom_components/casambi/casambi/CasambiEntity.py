@@ -54,7 +54,7 @@ class CasambiEntity(Entity):
             name = self.unit.name,
             manufacturer = self.brand,
             model = self.model,
-            sw_version = self.unit.firmwareVersion,
+            sw_version = self.unit.firmware_version,
         )
 
     @property
