@@ -23,12 +23,12 @@ _LOGGER = logging.getLogger(__name__)
 class CasambiController:
     """Manages a single Casambi Controller."""
 
-    def __init__(self, hass, network_retry_timer=30, units={}):
+    def __init__(self, hass, network_retry_timer=30, lights={}):
         """Initialize the system."""
         self._hass = hass
         self._aiocasambi_controller = None
         self._network_retry_timer = network_retry_timer
-        self.units = units
+        self.lights = lights
 
     @property
     def aiocasambi_controller(self):
@@ -80,27 +80,27 @@ class CasambiController:
             # Try again to reconnect
             self._hass.loop.call_later(self._network_retry_timer, self.async_reconnect)
 
-    def update_unit_state(self, unit):
+    def update_light_state(self, light):
         """
         Update unit state
         """
-        _LOGGER.debug(f"update_unit_state: unit: {unit} units: {self.units}")
-        if unit in self.units:
-            self.units[unit].update_state()
+        _LOGGER.debug(f"update_light_state: unit: {light} lights: {self.lights}")
+        if light in self.lights:
+            self.lights[light].update_state()
 
-    def update_all_units(self):
+    def update_all_lights(self):
         """
-        Update all the units state
+        Update all the lights state
         """
-        for key in self.units:
-            self.units[key].update_state()
+        for key in self.lights:
+            self.lights[key].update_state()
 
-    def set_all_units_offline(self):
+    def set_all_lights_offline(self):
         """
-        Set all units to offline
+        Set all lights to offline
         """
-        for key in self.units:
-            self.units[key].set_online(False)
+        for key in self.lights:
+            self.lights[key].set_online(False)
 
     def signalling_callback(self, signal, data):
         """
@@ -111,19 +111,19 @@ class CasambiController:
 
         if signal == SIGNAL_DATA:
             for key, value in data.items():
-                unit = self.units.get(key)
+                unit = self.lights.get(key)
                 if unit:
-                    self.units[key].process_update(value)
+                    self.lights[key].process_update(value)
                 else:
                     warn_msg = "signalling_callback: unit is None!"
                     warn_msg += f"key: {key} signal: {signal} data: {data} "
-                    warn_msg += f"units: {pformat(self.units)}"
+                    warn_msg += f"lights: {pformat(self.lights)}"
                     _LOGGER.warning(warn_msg)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
             # Set all units to offline
-            self.set_all_units_offline()
+            self.set_all_lights_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
@@ -131,11 +131,11 @@ class CasambiController:
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
             # Set all units to offline
-            self.set_all_units_offline()
+            self.set_all_lights_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
             self._hass.loop.create_task(self.async_reconnect())
         elif signal == SIGNAL_UNIT_PULL_UPDATE:
             # Update units that is specified
             for unit in data:
-                self.update_unit_state(unit)
+                self.update_light_state(unit)

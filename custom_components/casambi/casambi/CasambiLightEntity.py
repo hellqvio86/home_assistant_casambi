@@ -318,6 +318,6 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         """Return the representation."""
         name = self.unit.name
 
-        result = f"<Casambi light {name}: unit={self.unit}"
+        result = f"<Casambi light {name}: unit={self.unit}>"
 
         return result
