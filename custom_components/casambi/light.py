@@ -249,7 +249,7 @@ async def async_setup_platform(
             f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
         )
 
-    controller = aiocasambi.Controller(
+    aiocasambi_controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
         network_password=network_password,
@@ -260,13 +260,13 @@ async def async_setup_platform(
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    casambi_controller.aiocasambi_controller = aiocasambi_controller
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
-            await controller.create_session()
-            await controller.initialize()
-            await controller.start_websockets()
+            await aiocasambi_controller.create_session()
+            await aiocasambi_controller.initialize()
+            await aiocasambi_controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error(
@@ -298,7 +298,7 @@ async def async_setup_platform(
         )
         return False
 
-    units = controller.get_units()
+    units = aiocasambi_controller.get_units()
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -317,7 +317,7 @@ async def async_setup_platform(
             continue
 
         casambi_light = CasambiLightEntity(
-            coordinator, unit.unique_id, unit, controller, hass
+            coordinator, unit.unique_id, unit, aiocasambi_controller, hass
         )
         async_add_entities([casambi_light], True)
 
