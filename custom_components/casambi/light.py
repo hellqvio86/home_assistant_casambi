@@ -115,7 +115,7 @@ async def async_setup_entry(
 
         raise ConfigurationError(err_msg)
 
-    controller = aiocasambi.Controller(
+    aiocasambi_controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
         network_password=network_password,
@@ -126,13 +126,13 @@ async def async_setup_entry(
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    casambi_controller.aiocasambi_controller = aiocasambi_controller
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
-            await controller.create_session()
-            await controller.initialize()
-            await controller.start_websockets()
+            await aiocasambi_controller.create_session()
+            await aiocasambi_controller.initialize()
+            await aiocasambi_controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error("Integrations UI setup: Connected to casambi but couldn't log in")
@@ -160,7 +160,7 @@ async def async_setup_entry(
         )
         return False
 
-    units = controller.get_units()
+    units = aiocasambi_controller.get_units()
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -179,11 +179,11 @@ async def async_setup_entry(
             continue
 
         casambi_light = CasambiLightEntity(
-            coordinator, unit.unique_id, unit, controller, hass
+            coordinator, unit.unique_id, unit, aiocasambi_controller, hass
         )
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.lights[casambi_light.unique_id] = casambi_light
 
     # add entity service to turn on Casambi light
     platform = entity_platform.async_get_current_platform()
@@ -199,6 +199,9 @@ async def async_setup_entry(
         },
         "async_handle_entity_service_light_turn_on",
     )
+
+    # Force a state update in HA for all lights
+    # casambi_controller.update_all_lights()
 
     return True
 
@@ -321,12 +324,16 @@ async def async_setup_platform(
         )
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.lights[casambi_light.unique_id] = casambi_light
+
+    # Force a state update in HA for all lights
+    # casambi_controller.update_all_lights()
 
     @callback
     async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
         """Handle turn on of Casambi light when setup from yaml."""
-        dbg_msg = f"ServiceCall {call.domain}.{call.service}, data: {call.data}"
+        dbg_msg = f"ServiceCall {call.domain}.{call.service}, "
+        dbg_msg += "data: {call.data}"
         _LOGGER.debug(dbg_msg)
 
         # Check if entities were selected
@@ -355,10 +362,10 @@ async def async_setup_platform(
 
         _LOGGER.debug(dbg_msg)
 
-        _units = hass.data[DOMAIN]["controller"].units
+        _lights = hass.data[DOMAIN]["controller"].lights
 
         for _entity_id in _entity_ids:
-            for casambi_light in _units.values():
+            for casambi_light in _lights.values():
                 if casambi_light.entity_id == _entity_id:
                     # entity found
                     params = {}
