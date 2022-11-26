@@ -26,29 +26,35 @@ class CasambiController:
     def __init__(self, hass, network_retry_timer=30, units={}):
         """Initialize the system."""
         self._hass = hass
-        self._controller = None
+        self._aiocasambi_controller = None
         self._network_retry_timer = network_retry_timer
         self.units = units
 
     @property
-    def controller(self):
+    def aiocasambi_controller(self):
         """
         Getter for controller
         """
-        return self._controller
+        return self._aiocasambi_controller
 
-    @controller.setter
-    def controller(self, controller):
+    @aiocasambi_controller.setter
+    def aiocasambi_controller(self, aiocasambi_controller):
         """
         Setter for controller
         """
-        self._controller = controller
+        self._aiocasambi_controller = aiocasambi_controller
 
     async def async_update_data(self):
         """Function for polling network state (state of lights)"""
         _LOGGER.debug("async_update_data started")
+
+        if not (self._aiocasambi_controller):
+            # Controller is not set yet
+            _LOGGER.warning("aiocasambi controller is not set yet!")
+            return
+
         try:
-            await self._controller.get_network_state()
+            await self._aiocasambi_controller.get_network_state()
         except aiocasambi.LoginRequired:
             # Need to reconnect, session is invalid
             await self.async_reconnect()
@@ -58,10 +64,10 @@ class CasambiController:
         Reconnect to the Internet API
         """
         _LOGGER.debug("async_reconnect: trying to connect to casambi")
-        await self._controller.reconnect()
+        await self._aiocasambi_controller.reconnect()
 
         all_running = True
-        states = self._controller.get_websocket_states()
+        states = self._aiocasambi_controller.get_websocket_states()
         for state in states:
             if state != STATE_RUNNING:
                 all_running = False
