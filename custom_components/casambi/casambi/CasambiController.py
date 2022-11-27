@@ -29,6 +29,7 @@ class CasambiController:
         self._controller = None
         self._network_retry_timer = network_retry_timer
         self.units = units
+        self.entities = []
 
     @property
     def controller(self):
@@ -79,22 +80,23 @@ class CasambiController:
         Update unit state
         """
         _LOGGER.debug(f"update_unit_state: unit: {unit} units: {self.units}")
-        if unit in self.units:
-            self.units[unit].update_state()
+        for entity in self.entities:
+            if entity._unit_unique_id == unit:
+                entity.update_state()
 
     def update_all_units(self):
         """
         Update all the units state
         """
-        for key in self.units:
-            self.units[key].update_state()
+        for entity in self.entities:
+            entity.update_state()
 
     def set_all_units_offline(self):
         """
         Set all units to offline
         """
-        for key in self.units:
-            self.units[key].set_online(False)
+        for entity in self.entities:
+            entity.set_online(False)
 
     def signalling_callback(self, signal, data):
         """
@@ -104,15 +106,8 @@ class CasambiController:
         _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
 
         if signal == SIGNAL_DATA:
-            for key, value in data.items():
-                unit = self.units.get(key)
-                if unit:
-                    self.units[key].process_update(value)
-                else:
-                    warn_msg = "signalling_callback: unit is None!"
-                    warn_msg += f"key: {key} signal: {signal} data: {data} "
-                    warn_msg += f"units: {pformat(self.units)}"
-                    _LOGGER.warning(warn_msg)
+            for entity in self.entities:
+                entity.process_update(data)
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_STOPPED):
             _LOGGER.debug("signalling_callback websocket STATE_STOPPED")
 
