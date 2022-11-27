@@ -183,7 +183,6 @@ async def async_setup_entry(
         )
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
 
     # add entity service to turn on Casambi light
     platform = entity_platform.async_get_current_platform()
