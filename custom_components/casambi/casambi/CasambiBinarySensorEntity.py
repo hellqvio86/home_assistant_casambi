@@ -19,7 +19,3 @@ class CasambiBinarySensorEntity(BinarySensorEntity, CasambiEntity):
         self._attr_icon = icon
 
         _LOGGER.debug(f"Casambi {name} - init - end")
-
-    # @property
-    # def state(self):
-    #     return self._attr_state
