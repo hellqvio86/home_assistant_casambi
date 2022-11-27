@@ -23,12 +23,12 @@ _LOGGER = logging.getLogger(__name__)
 class CasambiController:
     """Manages a single Casambi Controller."""
 
-    def __init__(self, hass, network_retry_timer=30, lights={}):
+    def __init__(self, hass, network_retry_timer=30, entities=[]):
         """Initialize the system."""
         self._hass = hass
         self._aiocasambi_controller = None
         self._network_retry_timer = network_retry_timer
-        self.entities = []
+        self.entities = entities
 
     @property
     def aiocasambi_controller(self):
