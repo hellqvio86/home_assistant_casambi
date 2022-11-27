@@ -1,6 +1,7 @@
 import logging
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+from homeassistant.const import STATE_OFF, STATE_ON
 from homeassistant.helpers.entity import EntityCategory
 
 from .CasambiBinarySensorEntity import CasambiBinarySensorEntity
@@ -28,7 +29,7 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
 
     @property
     def state(self):
-        return "on" if self.unit.online else "off"
+        return STATE_ON if self.unit.online else STATE_OFF
 
     def update_state(self):
         """Update units state"""
