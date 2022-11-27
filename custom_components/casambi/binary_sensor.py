@@ -17,11 +17,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities):
     _LOGGER.debug("Setting up binary sensor entities.")
-    # config = hass.data[DOMAIN][config_entry.entry_id]
 
-    # TODO: extract casambi controller from light entity
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
-
     units = casambi_controller.aiocasambi_controller.get_units()
     binary_sensors = []
 
