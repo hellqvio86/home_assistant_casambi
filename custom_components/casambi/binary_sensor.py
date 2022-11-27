@@ -21,25 +21,23 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 
     # TODO: extract casambi controller from light entity
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
-    coordinator = hass.data[DOMAIN]["coordinator"]
-    await coordinator.async_refresh()
 
     units = casambi_controller.controller.get_units()
-    binarySensors = []
+    binary_sensors = []
 
     for unit in units:
         _LOGGER.debug("Adding CasambiStatusBinarySensorEntity...")
-        binarySensors.append(CasambiStatusBinarySensorEntity(unit, casambi_controller.controller, hass))
-
+        binary_sensors.append(CasambiStatusBinarySensorEntity(unit, casambi_controller, hass))
+        
         # TODO: check for overheat control
         # 'controls': [[{'name': 'overheat', 'type': 'Overheat', 'status': 'ok'}, {'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}]]
         # if ...
           #  _LOGGER.debug("Adding CasambiOverheatBinarySensorEntity...")
-          #  binarySensors.append(CasambiOverheatBinarySensorEntity(unit, casambi_controller.controller, hass))
+          #  binary_sensors.append(CasambiOverheatBinarySensorEntity(unit, casambi_controller, hass))
 
-    if binarySensors:
+    if binary_sensors:
         _LOGGER.debug("Adding binary sensor entities...")
-        async_add_entities(binarySensors)
+        async_add_entities(binary_sensors)
     else:
         _LOGGER.debug("No binary sensor entities available.")
 
