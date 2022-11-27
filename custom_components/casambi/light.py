@@ -25,12 +25,11 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers import aiohttp_client, entity_platform
 from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 import voluptuous as vol
-from homeassistant.helpers import entity_platform
 
 from .const import (
     DOMAIN,
@@ -109,7 +108,7 @@ async def async_setup_entry(
     if network_password == "":
         network_password = None
 
-    if not (user_password) and not (network_password):
+    if not user_password and not network_password:
         err_msg = f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} "
         err_msg += "must be set in config!"
 
@@ -244,7 +243,7 @@ async def async_setup_platform(
     if network_password == "":
         network_password = None
 
-    if not (user_password) and not (network_password):
+    if not user_password and not network_password:
         raise ConfigurationError(
             f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
         )

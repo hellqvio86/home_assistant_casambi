@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 
+
 class RestartRequiredFixFlow(RepairsFlow):
     """Handler for an issue fixing flow."""
 
