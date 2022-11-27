@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     # TODO: extract casambi controller from light entity
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
 
-    units = casambi_controller.controller.get_units()
+    units = casambi_controller.aiocasambi_controller.get_units()
     binary_sensors = []
 
     for unit in units:
