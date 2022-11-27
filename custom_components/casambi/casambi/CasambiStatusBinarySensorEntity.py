@@ -24,7 +24,7 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
 
     @property
     def available(self) -> bool:
-        """Connectivity entity is always availble."""
+        """Connectivity entity is always available."""
         return True
 
     @property
