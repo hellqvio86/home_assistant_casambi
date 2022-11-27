@@ -48,4 +48,4 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"<Casambi status binary sensor {self.unit.name}: unit={self.unit}"
+        return f"<Casambi status binary sensor {self.unit.name}: unit={self.unit}>"

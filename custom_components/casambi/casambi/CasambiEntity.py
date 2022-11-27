@@ -60,4 +60,4 @@ class CasambiEntity(Entity):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"<Casambi {self.unit.name}: unit={self.unit}"
+        return f"<Casambi {self.unit.name}: unit={self.unit}>"
