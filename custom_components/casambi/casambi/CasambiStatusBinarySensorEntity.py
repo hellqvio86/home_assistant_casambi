@@ -15,30 +15,35 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
         CasambiBinarySensorEntity.__init__(self, unit, controller, hass,
             "Status", BinarySensorDeviceClass.CONNECTIVITY)
 
-        # self._attr_is_on = False
-        self._attr_state = self.unit.online
-
         _LOGGER.debug(f"Casambi status binary sensor - init - end")
 
     @property
     def entity_category(self):
         return EntityCategory.DIAGNOSTIC
 
-    # @property
-    # def state(self):
-    #     return self.controller.units[self._unit_unique_id].online
+    @property
+    def available(self) -> bool:
+        """Connectivity entity is always availble."""
+        return True
 
-    async def async_update(self) -> None:
-        """Update Casambi entity."""
-        self._attr_state = self.unit.online
-        _LOGGER.debug(f"async_update {self}")
+    @property
+    def state(self):
+        return "on" if self.unit.online else "off"
+
+    def update_state(self):
+        """Update units state"""
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            _LOGGER.debug(f"update_state {self}")
+            self.async_schedule_update_ha_state(True)
 
     def process_update(self, data):
         """Process callback message, update home assistant light state"""
         _LOGGER.debug(f"process_update: self: {self} data: {data}")
         if self.enabled:
-            # Device needs to be enabled for us to schedule updates
-            self.async_schedule_update_ha_state(True)
+            if self._unit_unique_id in data:
+                # Device needs to be enabled for us to schedule updates
+                self.async_schedule_update_ha_state(True)
 
     def __repr__(self) -> str:
         """Return the representation."""
