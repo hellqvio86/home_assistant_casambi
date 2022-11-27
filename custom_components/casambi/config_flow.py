@@ -99,13 +99,14 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Required(CONF_API_KEY): cv.string,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_API_KEY): cv.string,
+                }
+            ),
             errors=errors,
             last_step=False,
         )
-
 
     async def async_step_site_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user has provided the API key via the user interface."""
@@ -130,10 +131,12 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="site_user",
-            data_schema=vol.Schema({
-                vol.Required(CONF_EMAIL): cv.string,
-                vol.Required(CONF_USER_PASSWORD): cv.string,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_EMAIL): cv.string,
+                    vol.Required(CONF_USER_PASSWORD): cv.string,
+                }
+            ),
             errors=errors,
             last_step=False,
         )
@@ -160,9 +163,11 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="network",
-            data_schema=vol.Schema({
-                vol.Required(CONF_NETWORK_PASSWORD): cv.string,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_NETWORK_PASSWORD): cv.string,
+                }
+            ),
             errors=errors,
             last_step=True,
         )

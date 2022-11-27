@@ -25,12 +25,11 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers import aiohttp_client, entity_platform
 from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 from homeassistant.const import CONF_EMAIL, CONF_API_KEY, CONF_SCAN_INTERVAL
 
 import voluptuous as vol
-from homeassistant.helpers import entity_platform
 
 from .const import (
     DOMAIN,
@@ -109,13 +108,13 @@ async def async_setup_entry(
     if network_password == "":
         network_password = None
 
-    if not (user_password) and not (network_password):
+    if not user_password and not network_password:
         err_msg = f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} "
         err_msg += "must be set in config!"
 
         raise ConfigurationError(err_msg)
 
-    controller = aiocasambi.Controller(
+    aiocasambi_controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
         network_password=network_password,
@@ -126,13 +125,13 @@ async def async_setup_entry(
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    casambi_controller.aiocasambi_controller = aiocasambi_controller
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
-            await controller.create_session()
-            await controller.initialize()
-            await controller.start_websockets()
+            await aiocasambi_controller.create_session()
+            await aiocasambi_controller.initialize()
+            await aiocasambi_controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error("Integrations UI setup: Connected to casambi but couldn't log in")
@@ -160,7 +159,7 @@ async def async_setup_entry(
         )
         return False
 
-    units = controller.get_units()
+    units = aiocasambi_controller.get_units()
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -179,10 +178,9 @@ async def async_setup_entry(
             continue
 
         casambi_light = CasambiLightEntity(
-            coordinator, unit.unique_id, unit, controller, hass
+            coordinator, unit.unique_id, unit, aiocasambi_controller, hass
         )
         async_add_entities([casambi_light], True)
-
 
     # add entity service to turn on Casambi light
     platform = entity_platform.async_get_current_platform()
@@ -243,12 +241,12 @@ async def async_setup_platform(
     if network_password == "":
         network_password = None
 
-    if not (user_password) and not (network_password):
+    if not user_password and not network_password:
         raise ConfigurationError(
             f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
         )
 
-    controller = aiocasambi.Controller(
+    aiocasambi_controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
         network_password=network_password,
@@ -259,13 +257,13 @@ async def async_setup_platform(
         network_timeout=network_timeout,
     )
 
-    casambi_controller.controller = controller
+    casambi_controller.aiocasambi_controller = aiocasambi_controller
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
-            await controller.create_session()
-            await controller.initialize()
-            await controller.start_websockets()
+            await aiocasambi_controller.create_session()
+            await aiocasambi_controller.initialize()
+            await aiocasambi_controller.start_websockets()
 
     except aiocasambi.LoginRequired:
         _LOGGER.error(
@@ -297,7 +295,7 @@ async def async_setup_platform(
         )
         return False
 
-    units = controller.get_units()
+    units = aiocasambi_controller.get_units()
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -316,16 +314,17 @@ async def async_setup_platform(
             continue
 
         casambi_light = CasambiLightEntity(
-            coordinator, unit.unique_id, unit, controller, hass
+            coordinator, unit.unique_id, unit, aiocasambi_controller, hass
         )
         async_add_entities([casambi_light], True)
 
-        casambi_controller.units[casambi_light.unique_id] = casambi_light
+        casambi_controller.lights[casambi_light.unique_id] = casambi_light
 
     @callback
     async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
         """Handle turn on of Casambi light when setup from yaml."""
-        dbg_msg = f"ServiceCall {call.domain}.{call.service}, data: {call.data}"
+        dbg_msg = f"ServiceCall {call.domain}.{call.service}, "
+        dbg_msg += "data: {call.data}"
         _LOGGER.debug(dbg_msg)
 
         # Check if entities were selected
@@ -354,10 +353,10 @@ async def async_setup_platform(
 
         _LOGGER.debug(dbg_msg)
 
-        _units = hass.data[DOMAIN]["controller"].units
+        _lights = hass.data[DOMAIN]["controller"].lights
 
         for _entity_id in _entity_ids:
-            for casambi_light in _units.values():
+            for casambi_light in _lights.values():
                 if casambi_light.entity_id == _entity_id:
                     # entity found
                     params = {}
