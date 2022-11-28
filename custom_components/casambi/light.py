@@ -75,7 +75,10 @@ async def async_setup_entry(
 
 
 async def async_setup_platform(
-    hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities, discovery_info=None
+    hass: HomeAssistant, 
+    config_entry: ConfigEntry, 
+    async_add_entities, 
+    discovery_info=None,
 ):
     """
     Setup Casambi platform, called when setup through configuration.yaml
