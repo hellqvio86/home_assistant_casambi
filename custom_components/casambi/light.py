@@ -206,7 +206,7 @@ async def async_setup_platform(
     hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None
 ):
     """
-    Setup Casambi platform
+    Setup Casambi platform, called when setup through configuration.yaml
     """
     user_password = None
     if CONF_USER_PASSWORD in config:
