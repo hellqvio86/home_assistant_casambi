@@ -15,6 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class CasambiEntity(Entity):
     """Defines a Casambi Entity."""
+
     _attr_has_entity_name = True
 
     def __init__(self, unit, controller, hass, name: str = None):
@@ -35,10 +36,10 @@ class CasambiEntity(Entity):
         return DeviceInfo(
             identifiers={(DOMAIN, self.unit.unique_id)},
             name=self.unit.name,
-            default_manufacturer = "Casambi",
-            manufacturer = self.unit.oem,
-            default_model = "Casambi",
-            model = self.unit.fixture_model,
+            default_manufacturer="Casambi",
+            manufacturer=self.unit.oem,
+            default_model="Casambi",
+            model=self.unit.fixture_model,
             sw_version=self.unit.firmware_version,
         )
 
