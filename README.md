@@ -1,4 +1,5 @@
 # Home assistant Casambi Lights support
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hellqvio86/home_assistant_casambi)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 ![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/home_assistant_casambi)
@@ -12,33 +13,38 @@ https://github.com/olofhellqvist/aiocasambi
 
 ## Not supported devices
 
-| OEM | Fixture Model | Comment |
-| ------------- | ------------- | -----|
-| OLIGO  | GRACE PL HA TW  | Integration do not support two dimmers, hardware is needed in order to develop support for controls': [{'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}, {'name': 'dimmer1', 'type': 'Dimmer', 'value': 0.0}|
-| OLIGO | CURVED| Support for light with two dimmers (up and down light) is currently limited. Both dimmers are controlled simultaneously with one light entity in Home Assistant, no separate control implemented as of today (see #54). |
+| OEM   | Fixture Model  | Comment                                                                                                                                                                                                                 |
+| ----- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OLIGO | GRACE PL HA TW | Integration do not support two dimmers, hardware is needed in order to develop support for controls': [{'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}, {'name': 'dimmer1', 'type': 'Dimmer', 'value': 0.0}         |
+| OLIGO | CURVED         | Support for light with two dimmers (up and down light) is currently limited. Both dimmers are controlled simultaneously with one light entity in Home Assistant, no separate control implemented as of today (see #54). |
 
 ## Supported devices
 
 ### Lights
+
 #### Supported modes
+
 These modes are implemented:
 
-* on/off
-* brightness
-* color temperature
-* rgb
-* rgbw
+- on/off
+- brightness
+- color temperature
+- rgb
+- rgbw
 
 ### Distribution/Vertical
+
 Distribution/Vertical is supported by using **casambi.light_turn_on** service, see screenshot below:
 ![Screenshot](/misc/docs/images/screenshot_casambi_turn_on_light_service.png)
+
 ## Usage
 
 ### Prerequisite
-* [Home Assistant](https://www.home-assistant.io/)
-* Request developer api key from Casambi: https://developer.casambi.com/
-* Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
-* Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
+
+- [Home Assistant](https://www.home-assistant.io/)
+- Request developer api key from Casambi: https://developer.casambi.com/
+- Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
+- Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
 
 ### Installation
 
@@ -51,32 +57,12 @@ Distribution/Vertical is supported by using **casambi.light_turn_on** service, s
 
 Just place the directory "casambi" in to your 'custom_components' folder.
 
-### Configuration
-Add these lines in your configuration.yml
-
-```
-light:
-  - platform: casambi
-    email: !secret casambi_email
-    api_key: !secret casambi_api_key
-    network_password : !secret casambi_network_password # The network password
-    user_password : !secret casambi_user_password # The site password for your user
-```
-
-Optional arguments:
-```
-light:
-  - platform: casambi
-    ...
-    network_timeout: 30    #default is 300 seconds
-    scan_interval: 60      #default is 60 seconds
-```
-
-Of course you need to make sure you have the secrets available.
-
 ### Troubleshot
+
 #### Enable logging in your configuration.yml
+
 Set logging to debug mode for integration and [aiocasambi](https://github.com/hellqvio86/aiocasambi) (library that the integration uses):
+
 ```
 logger:
   default: info
@@ -87,20 +73,23 @@ logger:
 ```
 
 ### Todo list
+
 Links to what needs to be done next: https://developers.home-assistant.io/docs/integration_quality_scale_index/ , https://developers.home-assistant.io/docs/creating_component_code_review/ and https://developers.home-assistant.io/docs/creating_platform_code_review/ .
 
 ## Other Casambi projects
-* https://github.com/hellqvio86/aiocasambi - The Asynchronous I/O Casambi library that this project uses
-* https://github.com/hellqvio86/casambi - Casambi python library
-* https://github.com/awahlig/homebridge-casambi Homebridge plugin for Casambi
+
+- https://github.com/hellqvio86/aiocasambi - The Asynchronous I/O Casambi library that this project uses
+- https://github.com/hellqvio86/casambi - Casambi python library
+- https://github.com/awahlig/homebridge-casambi Homebridge plugin for Casambi
 
 ## Authors
 
-* **Olof Hellqvist** - *Initial work*
+- **Olof Hellqvist** - _Initial work_
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Disclaimer
+
 This custom component is neither affiliated with nor endorsed by Casambi.

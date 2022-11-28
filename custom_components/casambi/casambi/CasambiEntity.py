@@ -43,8 +43,10 @@ class CasambiEntity(Entity):
         return DeviceInfo(
             identifiers={(DOMAIN, self.unit.unique_id)},
             name=self.unit.name,
-            manufacturer=self.brand,
-            model=self.model,
+            default_manufacturer="Casambi",
+            manufacturer=self.unit.oem,
+            default_model="Casambi",
+            model=self.unit.fixture_model,
             sw_version=self.unit.firmware_version,
         )
 

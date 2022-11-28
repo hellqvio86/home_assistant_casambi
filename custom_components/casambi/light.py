@@ -97,7 +97,7 @@ async def async_setup_entry(
             translation_key="restart_required",
             translation_placeholders={},
         )
-        return
+        return True
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
@@ -204,8 +204,12 @@ async def async_setup_platform(
     hass: HomeAssistant, config: dict, async_add_entities, discovery_info=None
 ):
     """
-    Setup Casambi platform
+    Setup Casambi platform, called when setup through configuration.yaml
     """
+    warn_msg = "Using Casambi integration through configuration.yaml is deprecated, "
+    warn_msg += "please consider to switch to configuration flow!"
+    _LOGGER.warning(warn_msg)
+
     user_password = None
     if CONF_USER_PASSWORD in config:
         user_password = config[CONF_USER_PASSWORD]
