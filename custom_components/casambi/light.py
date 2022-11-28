@@ -208,6 +208,10 @@ async def async_setup_platform(
     """
     Setup Casambi platform, called when setup through configuration.yaml
     """
+    warn_msg = "Using Casambi integration through configuration.yaml is deprecated, "
+    warn_msg += "please consider to switch to configuration flow!"
+    _LOGGER.warning(warn_msg)
+
     user_password = None
     if CONF_USER_PASSWORD in config:
         user_password = config[CONF_USER_PASSWORD]
