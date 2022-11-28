@@ -33,27 +33,15 @@ class CasambiEntity(Entity):
         return self.unit.unique_id
 
     @property
-    def model(self):
-        """Return the model for this sensor."""
-        if self.unit.fixture_model:
-            return self.unit.fixture_model
-        return "Casambi"
-
-    @property
-    def brand(self):
-        """Return the brand for this sensor."""
-        if self.unit.oem:
-            return self.unit.oem
-        return "Casambi"
-
-    @property
     def device_info(self) -> DeviceInfo:
         """Return device information about this Casambi Key Light."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.unit.unique_id)},
             name=self.unit.name,
-            manufacturer=self.brand,
-            model=self.model,
+            default_manufacturer = "Casambi",
+            manufacturer = self.unit.oem,
+            default_model = "Casambi",
+            model = self.unit.fixture_model,
             sw_version=self.unit.firmware_version,
         )
 
