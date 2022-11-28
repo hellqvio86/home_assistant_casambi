@@ -97,7 +97,7 @@ async def async_setup_entry(
             translation_key="restart_required",
             translation_placeholders={},
         )
-        return
+        return True
 
     hass.data[DOMAIN][CONF_CONTROLLER] = CasambiController(hass)
     casambi_controller = hass.data[DOMAIN][CONF_CONTROLLER]
