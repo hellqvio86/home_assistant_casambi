@@ -82,13 +82,13 @@ class CasambiController:
             # Try again to reconnect
             self._hass.loop.call_later(self._network_retry_timer, self.async_reconnect)
 
-    def update_light_state(self, light):
+    def update_light_state(self, unit_unique_id):
         """
         Update unit state
         """
-        _LOGGER.debug(f"update_light_state: unit: {light} lights: {self.lights}")
+        _LOGGER.debug(f"update_light_state: unit: {unit_unique_id} lights: {self.entities}")
         for entity in self.entities:
-            if entity._unit_unique_id == light:
+            if entity._unit_unique_id == unit_unique_id:
                 entity.update_state()
 
     def update_all_lights(self):
