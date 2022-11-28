@@ -15,17 +15,14 @@ _LOGGER = logging.getLogger(__name__)
 
 class CasambiEntity(Entity):
     """Defines a Casambi Entity."""
+    _attr_has_entity_name = True
 
-    def __init__(self, unit, controller, hass):
+    def __init__(self, unit, controller, hass, name: str = None):
         """Initialize Casambi Entity."""
         self.unit = unit
         self.controller = controller
         self.hass = hass
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return self.unit.name
+        self._attr_name = name
 
     @property
     def unique_id(self) -> str:
