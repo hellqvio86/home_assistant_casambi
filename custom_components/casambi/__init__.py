@@ -21,10 +21,10 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up platform from a ConfigEntry."""
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][config_entry.entry_id] = dict(config_entry.data)
+    config = hass.data[DOMAIN][config_entry.entry_id] = dict(config_entry.data)
     # Registers update listener to update config entry when options are updated.
     # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
-    hass.data[DOMAIN][config_entry.entry_id]["remove_update_listener"] = config_entry.add_update_listener(options_update_listener)
+    config["remove_update_listener"] = config_entry.add_update_listener(options_update_listener)
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
         dbg_msg = "async_setup_platform CasambiController already created!"
@@ -42,7 +42,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         )
         return True
 
-    config = hass.data[DOMAIN][config_entry.entry_id]
     controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(hass, config)
     if not controller:
         return False
