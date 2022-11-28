@@ -15,6 +15,7 @@ CONF_USER_PASSWORD = "user_password"
 CONF_NETWORK_PASSWORD = "network_password"
 CONF_NETWORK_TIMEOUT = "network_timeout"
 CONF_CONTROLLER = "controller"
+CONF_COORDINATOR = "coordinator"
 
 SERVICE_CASAMBI_LIGHT_TURN_ON = "light_turn_on"
 ATTR_SERV_BRIGHTNESS = "brightness"
