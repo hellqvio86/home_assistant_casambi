@@ -60,7 +60,7 @@ async def async_create_controller(
 
     controller = CasambiController(hass)
 
-    aiocasambi_controller = aiocasambi.Controller(
+    aiocasambi_controller = controller.aiocasambi_controller = aiocasambi.Controller(
         email=email,
         user_password=user_password,
         network_password=network_password,
@@ -70,8 +70,6 @@ async def async_create_controller(
         callback=controller.signalling_callback,
         network_timeout=network_timeout,
     )
-
-    controller.aiocasambi_controller = aiocasambi_controller
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
