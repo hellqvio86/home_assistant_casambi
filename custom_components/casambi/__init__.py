@@ -51,6 +51,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, Platform.LIGHT)
     )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, Platform.BINARY_SENSOR)
+    )
     return True
 
 async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
@@ -62,6 +65,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = all(
         await asyncio.gather(
             *[hass.config_entries.async_forward_entry_unload(entry, Platform.LIGHT)]
+            *[hass.config_entries.async_forward_entry_unload(entry, Platform.BINARY_SENSOR)]
         )
     )
     # Remove options_update_listener.
