@@ -16,7 +16,6 @@ except ImportError:
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers import entity_platform
-from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 
 from .const import (
     DOMAIN,
@@ -29,7 +28,6 @@ from .const import (
 )
 
 from .casambi.CasambiLightEntity import CasambiLightEntity
-from .casambi.CasambiController import CasambiController
 from .utils import async_create_controller, async_create_coordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -105,6 +103,7 @@ async def async_setup_platform(
         async_add_entities([casambi_light], True)
 
         controller.lights[casambi_light.unique_id] = casambi_light
+
 
     @callback
     async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
