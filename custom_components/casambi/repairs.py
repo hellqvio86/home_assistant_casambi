@@ -9,8 +9,6 @@ from homeassistant import data_entry_flow
 from homeassistant.components.repairs import RepairsFlow
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
-
 
 class RestartRequiredFixFlow(RepairsFlow):
     """Handler for an issue fixing flow."""
