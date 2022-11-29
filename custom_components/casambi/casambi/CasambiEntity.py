@@ -3,14 +3,12 @@ Support for Casambi lights.
 """
 import logging
 
-from typing import Any, Dict
-
-from homeassistant.const import ATTR_NAME
 from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from ..const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class CasambiEntity(Entity):
     """Defines a Casambi Entity."""
@@ -18,7 +16,7 @@ class CasambiEntity(Entity):
 
     def __init__(self, unit, controller, hass, name: str = None):
         """Initialize Casambi Entity."""
-        _LOGGER.debug(f"Casambi entity - init - start")
+        _LOGGER.debug("Casambi entity - init - start")
         self.unit = unit
         self.controller = controller
         self.hass = hass
@@ -27,7 +25,7 @@ class CasambiEntity(Entity):
 
         controller.entities.append(self)
 
-        _LOGGER.debug(f"Casambi entity - init - end")
+        _LOGGER.debug("Casambi entity - init - end")
 
     @property
     def unique_id(self) -> str:
