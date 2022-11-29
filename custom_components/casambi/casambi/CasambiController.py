@@ -3,8 +3,6 @@ Support for Casambi lights.
 """
 import logging
 
-from pprint import pformat
-
 import aiocasambi
 
 from aiocasambi.consts import (
