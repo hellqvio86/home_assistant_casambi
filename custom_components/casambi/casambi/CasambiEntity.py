@@ -12,23 +12,30 @@ from ..const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-
 class CasambiEntity(Entity):
     """Defines a Casambi Entity."""
-
     _attr_has_entity_name = True
 
     def __init__(self, unit, controller, hass, name: str = None):
         """Initialize Casambi Entity."""
+        _LOGGER.debug(f"Casambi entity - init - start")
         self.unit = unit
         self.controller = controller
         self.hass = hass
+        self._unit_unique_id = unit.unique_id
         self._attr_name = name
+
+        controller.entities.append(self)
+
+        _LOGGER.debug(f"Casambi entity - init - end")
 
     @property
     def unique_id(self) -> str:
         """Return the unique ID for this sensor."""
-        return self.unit.unique_id
+        name = self.unit.unique_id
+        if self._attr_name:
+            name += f"_{self._attr_name}"
+        return name.lower()
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -52,3 +59,7 @@ class CasambiEntity(Entity):
     def should_poll(self):
         """Disable polling by returning False"""
         return False
+
+    def __repr__(self) -> str:
+        """Return the representation."""
+        return f"<Casambi {self.unit.name}: unit={self.unit}>"
