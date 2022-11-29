@@ -104,7 +104,6 @@ async def async_setup_platform(
 
         controller.lights[casambi_light.unique_id] = casambi_light
 
-
     @callback
     async def async_handle_platform_service_light_turn_on(call: ServiceCall) -> None:
         """Handle turn on of Casambi light when setup from yaml."""
