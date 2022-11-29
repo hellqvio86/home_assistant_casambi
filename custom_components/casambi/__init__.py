@@ -51,17 +51,21 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, Platform.LIGHT)
     )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(config_entry, Platform.BINARY_SENSOR)
+    )
     return True
 
 async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
     """Handle options update."""
     await hass.config_entries.async_reload(config_entry.entry_id)
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = all(
         await asyncio.gather(
-            *[hass.config_entries.async_forward_entry_unload(entry, Platform.LIGHT)]
+            *[hass.config_entries.async_forward_entry_unload(config_entry, Platform.LIGHT)]
+            *[hass.config_entries.async_forward_entry_unload(config_entry, Platform.BINARY_SENSOR)]
         )
     )
     # Remove options_update_listener.
@@ -74,7 +78,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+async def async_setup(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up the GitHub Custom component from yaml configuration."""
     hass.data.setdefault(DOMAIN, {})
     return True

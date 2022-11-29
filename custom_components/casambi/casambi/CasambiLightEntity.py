@@ -38,7 +38,7 @@ _LOGGER = logging.getLogger(__name__)
 class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
     """Defines a Casambi Key Light."""
 
-    def __init__(self, coordinator, idx, unit, controller, hass):
+    def __init__(self, coordinator, unit, controller, hass):
         """Initialize Casambi Key Light."""
         CasambiEntity.__init__(self, unit, controller, hass)
         CoordinatorEntity.__init__(self, coordinator)

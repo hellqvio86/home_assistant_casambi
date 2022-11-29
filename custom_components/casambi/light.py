@@ -51,10 +51,8 @@ async def async_setup_entry(
         if not unit.is_light():
             continue
 
-        casambi_light = CasambiLightEntity(coordinator, unit, controller.aiocasambi_controller, hass)
+        casambi_light = CasambiLightEntity(coordinator, unit, controller, hass)
         async_add_entities([casambi_light], True)
-
-        controller.lights[casambi_light.unique_id] = casambi_light
 
     # add entity service to turn on Casambi light
     platform = entity_platform.async_get_current_platform()
@@ -75,9 +73,9 @@ async def async_setup_entry(
 
 
 async def async_setup_platform(
-    hass: HomeAssistant, 
-    config_entry: ConfigEntry, 
-    async_add_entities, 
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities,
     discovery_info=None,
 ):
     """
