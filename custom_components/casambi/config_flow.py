@@ -11,12 +11,7 @@ from homeassistant.const import (
     CONF_EMAIL,
     CONF_API_KEY,
 )
-from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity_registry import (
-    async_entries_for_config_entry,
-    async_get_registry,
-)
 import voluptuous as vol
 
 from aiocasambi.helper import Helper
