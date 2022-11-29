@@ -3,13 +3,13 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
-from ..const import DOMAIN
 from .CasambiEntity import CasambiEntity
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class CasambiBinarySensorEntity(BinarySensorEntity, CasambiEntity):
-    def __init__(self, unit, controller, hass, name: str = None, device_class=None, icon=None):
+    def __init__(self, unit, controller, hass: HomeAssistant, name: str = None, device_class=None, icon=None):
         _LOGGER.debug(f"Casambi {name} - init - start")
 
         BinarySensorEntity.__init__(self)
