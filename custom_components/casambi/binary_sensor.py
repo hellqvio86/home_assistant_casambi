@@ -27,9 +27,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     for unit in units:
         _LOGGER.debug("Adding CasambiStatusBinarySensorEntity...")
         binary_sensors.append(CasambiStatusBinarySensorEntity(unit, controller, hass))
-        
+
         # TODO: check for overheat control
-        # 'controls': [[{'name': 'overheat', 'type': 'Overheat', 'status': 'ok'}, {'name': 'dimmer0', 'type': 'Dimmer', 'value': 0.0}]]
+        # 'controls': [[{'name': 'overheat', 'type': 'Overheat', 'status': 'ok'}, ...]]
         # if ...
         #   _LOGGER.debug("Adding CasambiOverheatBinarySensorEntity...")
         #   binary_sensors.append(CasambiOverheatBinarySensorEntity(unit, controller, hass))
