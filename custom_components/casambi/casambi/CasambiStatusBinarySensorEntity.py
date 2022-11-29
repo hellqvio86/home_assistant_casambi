@@ -11,12 +11,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
-        _LOGGER.debug(f"Casambi status binary sensor - init - start")
+        _LOGGER.debug("Casambi status binary sensor - init - start")
 
-        CasambiBinarySensorEntity.__init__(self, unit, controller, hass,
-            "Status", BinarySensorDeviceClass.CONNECTIVITY)
+        CasambiBinarySensorEntity.__init__(self, unit, controller, hass, "Status", BinarySensorDeviceClass.CONNECTIVITY)
 
-        _LOGGER.debug(f"Casambi status binary sensor - init - end")
+        _LOGGER.debug("Casambi status binary sensor - init - end")
 
     @property
     def entity_category(self):
