@@ -99,15 +99,23 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
 
     @property
     def color_temp(self) -> int:
-        """Return the CT color value in mireds."""
+        """
+        Return the CT color value in mireds.
+        """
         return self.unit.get_color_temp()
 
     @property
     def rgb_color(self):
+        """
+        Getter for rgb color
+        """
         return self.unit.get_rgb_color()
 
     @property
     def rgbw_color(self):
+        """
+        Getter for rgbe color
+        """
         return self.unit.get_rgbw_color()
 
     @property
@@ -121,7 +129,9 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
 
     @property
     def color_mode(self):
-        """Set color mode for this entity."""
+        """
+        Set color mode for this entity.
+        """
         if self.unit.supports_rgbw():
             return COLOR_MODE_RGBW
         if self.unit.supports_rgb():
@@ -135,7 +145,9 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
 
     @property
     def supported_color_modes(self):
-        """Flag supported color_modes (in an array format)."""
+        """
+        Flag supported color_modes (in an array format).
+        """
         supports = []
 
         if self.unit.supports_brightness():
@@ -153,12 +165,16 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
 
     @property
     def is_on(self) -> bool:
-        """Return the state of the light."""
+        """
+        Return the state of the light.
+        """
         return bool(self._state)
 
     @property
-    def extra_state_attributes(self):  # -> dict[str, str] | None:
-        #    """Return the optional state attributes."""
+    def extra_state_attributes(self):
+        """
+        Getter for extra state attributes
+        """
         return {
             "distribution": self._distribution,
         }
