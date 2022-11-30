@@ -61,7 +61,7 @@ class CasambiEntity(Entity):
     @property
     def should_poll(self):
         """Disable polling by returning False"""
-        return True
+        return False
 
     def __repr__(self) -> str:
         """Return the representation."""

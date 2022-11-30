@@ -103,6 +103,8 @@ class CasambiController:
         Set all lights to offline
         """
         _LOGGER.debug("set_all_lights_offline: called!")
+        for entity in self.entities:
+            entity.set_online(False)
 
         self.update_all_lights()
 

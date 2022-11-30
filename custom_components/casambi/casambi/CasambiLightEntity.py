@@ -199,6 +199,20 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
             "distribution": self._distribution,
         }
 
+    def set_online(self, online):
+        """
+        Set unit to online
+        """
+        self.unit.online = online
+
+        dbg_msg = "set_online: Setting online to "
+        dbg_msg += f'"{online}" for unit {self}'
+        _LOGGER.debug(dbg_msg)
+
+        if self.enabled:
+            # Device needs to be enabled for us to schedule updates
+            self.async_schedule_update_ha_state(True)
+
     def update_state(self):
         """
         Update units state
@@ -303,7 +317,9 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
 
     async def async_update(self) -> None:
         """Update Casambi entity."""
-        if self.unit.online:
+        if not self.unit.online:
+            _LOGGER.info(f"async_update: unit is not online: {self}")
+        else:
             if self.unit.value > 0:
                 self._state = True
                 self._brightness = int(round(self.unit.value * 255))
