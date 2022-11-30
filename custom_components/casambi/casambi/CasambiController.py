@@ -94,7 +94,7 @@ class CasambiController:
         """
         Update all the lights state
         """
-        _LOGGER.debug(f"update_all_lights: called!")
+        _LOGGER.debug("update_all_lights: called!")
         for entity in self.entities:
             entity.update_state()
 
@@ -102,7 +102,7 @@ class CasambiController:
         """
         Set all lights to offline
         """
-        _LOGGER.debug(f"set_all_lights_offline: called!")
+        _LOGGER.debug("set_all_lights_offline: called!")
 
         self.update_all_lights()
 
