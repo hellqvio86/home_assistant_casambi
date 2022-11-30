@@ -31,6 +31,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_create_controller(
     hass: HomeAssistant, config: ConfigEntry
 ) -> CasambiController:
@@ -98,6 +99,7 @@ async def async_create_controller(
         return None
 
     return controller
+
 
 async def async_create_coordinator(
     hass: HomeAssistant, config: ConfigEntry, controller: CasambiController,

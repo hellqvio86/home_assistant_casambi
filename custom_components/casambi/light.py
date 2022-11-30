@@ -16,7 +16,6 @@ except ImportError:
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers import entity_platform
-from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 
 from .const import (
     DOMAIN,
@@ -29,7 +28,6 @@ from .const import (
 )
 
 from .casambi.CasambiLightEntity import CasambiLightEntity
-from .casambi.CasambiController import CasambiController
 from .utils import async_create_controller, async_create_coordinator
 
 _LOGGER = logging.getLogger(__name__)
