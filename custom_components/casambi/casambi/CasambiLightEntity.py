@@ -50,13 +50,33 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         self._temperature: Optional[int] = None
 
     @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Whether or not the entity is enabled by default."""
+        return True
+
+    @property
+    def available(self) -> bool:
+        """
+        Return True if entity is available.
+        """
+        _available = self.unit.online
+
+        _LOGGER.debug(f"available is returning {_available} for unit={self.unit}")
+
+        return _available
+
+    @property
     def brightness(self) -> Optional[int]:
-        """Return the brightness of this light between 1..255."""
+        """
+        Return the brightness of this light between 1..255.
+        """
         return self._brightness
 
     @property
     def distribution(self) -> Optional[int]:
-        """Return the distribution of this light between 1..255."""
+        """
+        Return the distribution of this light between 1..255.
+        """
         return self._distribution
 
     @property

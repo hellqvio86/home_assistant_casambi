@@ -14,6 +14,7 @@ from aiocasambi.consts import (
     SIGNAL_UNIT_PULL_UPDATE,
 )
 
+from .CasambiLightEntity import CasambiLightEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class CasambiController:
         """Function for polling network state (state of lights)"""
         _LOGGER.debug("async_update_data started")
 
-        if not (self._aiocasambi_controller):
+        if not self._aiocasambi_controller:
             # Controller is not set yet
             _LOGGER.warning("aiocasambi controller is not set yet!")
             return
@@ -84,7 +85,9 @@ class CasambiController:
         """
         Update unit state
         """
-        _LOGGER.debug(f"update_light_state: unit: {unit_unique_id} lights: {self.entities}")
+        _LOGGER.debug(
+            f"update_light_state: unit: {unit_unique_id} lights: {self.entities}"
+        )
         for entity in self.entities:
             if entity._unit_unique_id == unit_unique_id:
                 entity.update_state()
@@ -93,6 +96,7 @@ class CasambiController:
         """
         Update all the lights state
         """
+        _LOGGER.debug("update_all_lights: called!")
         for entity in self.entities:
             entity.update_state()
 
@@ -100,15 +104,21 @@ class CasambiController:
         """
         Set all lights to offline
         """
+        _LOGGER.debug("set_all_lights_offline: called!")
         for entity in self.entities:
-            entity.set_online(False)
+            if isinstance(entity, CasambiLightEntity):
+                # Only CasambiLightEntity supports set_online,
+                # used when websocket goes down i.e. no Internet.
+                entity.set_online(False)
+
+        self.update_all_lights()
 
     def signalling_callback(self, signal, data):
         """
         Signalling callback
         """
 
-        _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
+        _LOGGER.debug(f"signalling_callback called signal: {signal} data: {data}")
 
         if signal == SIGNAL_DATA:
             for entity in self.entities:
