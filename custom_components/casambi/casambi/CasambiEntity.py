@@ -12,6 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class CasambiEntity(Entity):
     """Defines a Casambi Entity."""
+
     _attr_has_entity_name = True
 
     def __init__(self, unit, controller, hass, name: str = None):
@@ -51,12 +52,16 @@ class CasambiEntity(Entity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.unit.online
+        _available = self.unit.online
+
+        _LOGGER.debug(f"available is returning {_available} for unit={self.unit}")
+
+        return _available
 
     @property
     def should_poll(self):
         """Disable polling by returning False"""
-        return False
+        return True
 
     def __repr__(self) -> str:
         """Return the representation."""

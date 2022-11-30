@@ -14,7 +14,6 @@ from aiocasambi.consts import (
     SIGNAL_UNIT_PULL_UPDATE,
 )
 
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -84,7 +83,9 @@ class CasambiController:
         """
         Update unit state
         """
-        _LOGGER.debug(f"update_light_state: unit: {unit_unique_id} lights: {self.entities}")
+        _LOGGER.debug(
+            f"update_light_state: unit: {unit_unique_id} lights: {self.entities}"
+        )
         for entity in self.entities:
             if entity._unit_unique_id == unit_unique_id:
                 entity.update_state()
@@ -93,6 +94,7 @@ class CasambiController:
         """
         Update all the lights state
         """
+        _LOGGER.debug(f"update_all_lights: called!")
         for entity in self.entities:
             entity.update_state()
 
@@ -100,15 +102,16 @@ class CasambiController:
         """
         Set all lights to offline
         """
-        for entity in self.entities:
-            entity.set_online(False)
+        _LOGGER.debug(f"set_all_lights_offline: called!")
+
+        self.update_all_lights()
 
     def signalling_callback(self, signal, data):
         """
         Signalling callback
         """
 
-        _LOGGER.debug(f"signalling_callback signal: {signal} data: {data}")
+        _LOGGER.debug(f"signalling_callback called signal: {signal} data: {data}")
 
         if signal == SIGNAL_DATA:
             for entity in self.entities:
