@@ -13,12 +13,15 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
         _LOGGER.debug("Casambi status binary sensor - init - start")
 
-        CasambiBinarySensorEntity.__init__(self, unit, controller, hass, "Status", BinarySensorDeviceClass.CONNECTIVITY)
+        CasambiBinarySensorEntity.__init__(
+            self, unit, controller, hass, "Status", BinarySensorDeviceClass.CONNECTIVITY
+        )
 
         _LOGGER.debug("Casambi status binary sensor - init - end")
 
     @property
     def entity_category(self):
+        """Getter for entity category"""
         return EntityCategory.DIAGNOSTIC
 
     @property
@@ -28,6 +31,7 @@ class CasambiStatusBinarySensorEntity(CasambiBinarySensorEntity):
 
     @property
     def state(self):
+        """Getter for state"""
         return STATE_ON if self.unit.online else STATE_OFF
 
     def update_state(self):
