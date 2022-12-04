@@ -12,9 +12,9 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers import aiohttp_client
 
 from homeassistant.const import (
-  CONF_EMAIL,
-  CONF_API_KEY,
-  CONF_SCAN_INTERVAL,
+    CONF_EMAIL,
+    CONF_API_KEY,
+    CONF_SCAN_INTERVAL,
 )
 
 from .casambi.CasambiController import CasambiController
@@ -57,7 +57,9 @@ async def async_create_controller(
         network_timeout = config[CONF_NETWORK_TIMEOUT]
 
     if not user_password and not network_password:
-        raise ConfigurationError(f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!")
+        raise ConfigurationError(
+            f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
+        )
 
     controller = CasambiController(hass)
 
@@ -87,7 +89,9 @@ async def async_create_controller(
         return None
 
     except aiocasambi.RequestError as err:
-        _LOGGER.error(f"Error connecting to the Casambi, caught aiocasambi.RequestError, error message: {str(err)}")
+        _LOGGER.error(
+            f"Error connecting to the Casambi, caught aiocasambi.RequestError, error message: {str(err)}"
+        )
         return None
 
     except asyncio.TimeoutError:
@@ -98,11 +102,17 @@ async def async_create_controller(
         _LOGGER.error("Unknown Casambi communication error occurred!")
         return None
 
+    # Sleep so we get some websocket messages,
+    # oem and other settings needs to be set
+    asyncio.sleep(2)
+
     return controller
 
 
 async def async_create_coordinator(
-    hass: HomeAssistant, config: ConfigEntry, controller: CasambiController,
+    hass: HomeAssistant,
+    config: ConfigEntry,
+    controller: CasambiController,
 ) -> DataUpdateCoordinator:
     """Creates an Update Coordinator."""
     scan_interval = DEFAULT_POLLING_TIME
