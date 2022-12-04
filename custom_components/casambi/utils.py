@@ -104,7 +104,7 @@ async def async_create_controller(
 
     # Sleep so we get some websocket messages,
     # oem and other settings needs to be set
-    asyncio.sleep(2)
+    await asyncio.sleep(2)
 
     return controller
 
