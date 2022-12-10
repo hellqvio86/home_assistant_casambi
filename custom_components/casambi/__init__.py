@@ -24,7 +24,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     config = hass.data[DOMAIN][config_entry.entry_id] = dict(config_entry.data)
     # Registers update listener to update config entry when options are updated.
     # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
-    config["remove_update_listener"] = config_entry.add_update_listener(options_update_listener)
+    config["remove_update_listener"] = config_entry.add_update_listener(
+        options_update_listener
+    )
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
         dbg_msg = "async_setup_platform CasambiController already created!"
@@ -42,33 +44,47 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         )
         return True
 
-    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(hass, config)
+    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(
+        hass, config
+    )
     if not controller:
         return False
-    hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(hass, config, controller)
+    hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(
+        hass, config, controller
+    )
 
     # Forward the setup to the sensor platform.
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, Platform.LIGHT)
     )
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, Platform.BINARY_SENSOR)
+        hass.config_entries.async_forward_entry_setup(
+            config_entry, Platform.BINARY_SENSOR
+        )
     )
     return True
 
 
 async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
-    """Handle options update."""
+    """
+    Handle options update.
+    """
     await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
-    """Unload a config entry."""
+    """
+    Unload a config entry.
+    """
     unload_ok = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(config_entry, Platform.LIGHT),
-                hass.config_entries.async_forward_entry_unload(config_entry, Platform.BINARY_SENSOR),
+                hass.config_entries.async_forward_entry_unload(
+                    config_entry, Platform.LIGHT
+                ),
+                hass.config_entries.async_forward_entry_unload(
+                    config_entry, Platform.BINARY_SENSOR
+                ),
             ]
         )
     )
@@ -84,5 +100,9 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
 
 async def async_setup(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up the GitHub Custom component from yaml configuration."""
+
+    _LOGGER.debug(f"async_setup config_entry: {config_entry}")
+
     hass.data.setdefault(DOMAIN, {})
+
     return True

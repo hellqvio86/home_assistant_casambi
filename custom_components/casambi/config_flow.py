@@ -64,7 +64,8 @@ async def validate_user_password(
 async def validate_network_password(
     email: str, api_key: str, network_password: str, hass: core.HomeAssistant
 ) -> None:
-    """Validates a GitHub access token.
+    """
+    Validates a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
     """
@@ -78,7 +79,9 @@ async def validate_network_password(
 
 
 class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Github Custom config flow."""
+    """
+    Github Custom config flow.
+    """
 
     data: Optional[Dict[str, Any]] = {}
 
@@ -104,8 +107,11 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_site_user(self, user_input: Optional[Dict[str, Any]] = None):
-        """Invoked when a user has provided the API key via the user interface."""
+        """
+        Invoked when a user has provided the API key via the user interface.
+        """
         errors: Dict[str, str] = {}
+
         if user_input is not None:
             _LOGGER.debug(f"async_step_site_user user_input: {user_input}")
             try:
@@ -137,8 +143,11 @@ class CasambiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_network(self, user_input: Optional[Dict[str, Any]] = None):
-        """Invoked when a user has provided the API key and site credentials via the user interface."""
+        """
+        Invoked when a user has provided the API key and site credentials via the user interface.
+        """
         errors: Dict[str, str] = {}
+
         if user_input is not None:
             _LOGGER.debug(f"async_step_network user_input: {user_input}")
             try:
