@@ -1,3 +1,6 @@
+"""
+Utils for Casambi
+"""
 import logging
 import ssl
 import asyncio
@@ -35,7 +38,9 @@ _LOGGER = logging.getLogger(__name__)
 async def async_create_controller(
     hass: HomeAssistant, config: ConfigEntry
 ) -> CasambiController:
-    """Creates a Controller for the Casambi API."""
+    """
+    Creates a Controller for the Casambi API.
+    """
     api_key = config[CONF_API_KEY]
 
     email = config[CONF_EMAIL]

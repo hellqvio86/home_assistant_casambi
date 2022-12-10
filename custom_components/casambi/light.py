@@ -40,7 +40,9 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities,
 ):
-    """Setup sensors from a config entry created in the integrations UI."""
+    """
+    Setup sensors from a config entry created in the integrations UI.
+    """
     controller = hass.data[DOMAIN][CONF_CONTROLLER]
     coordinator = hass.data[DOMAIN][CONF_COORDINATOR]
 
@@ -89,17 +91,23 @@ async def async_setup_platform(
         return
 
     config = hass.data[DOMAIN][config_entry.entry_id]
-    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(hass, config)
+    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(
+        hass, config
+    )
     if not controller:
         return False
-    coordinator = hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(hass, config, controller)
+    coordinator = hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(
+        hass, config, controller
+    )
 
     units = controller.aiocasambi_controller.get_units()
     for unit in units:
         if not unit.is_light():
             continue
 
-        casambi_light = CasambiLightEntity(coordinator, unit, controller.aiocasambi_controller, hass)
+        casambi_light = CasambiLightEntity(
+            coordinator, unit, controller.aiocasambi_controller, hass
+        )
         async_add_entities([casambi_light], True)
 
         controller.lights[casambi_light.unique_id] = casambi_light

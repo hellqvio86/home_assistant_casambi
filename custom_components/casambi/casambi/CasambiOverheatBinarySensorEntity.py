@@ -11,7 +11,9 @@ class CasambiOverheatBinarySensorEntity(CasambiBinarySensorEntity):
     def __init__(self, unit, controller, hass):
         _LOGGER.debug("Casambi overheat binary sensor - init - start")
 
-        CasambiBinarySensorEntity.__init__(self, unit, controller, hass, "Overheat", BinarySensorDeviceClass.HEAT)
+        CasambiBinarySensorEntity.__init__(
+            self, unit, controller, hass, "Overheat", BinarySensorDeviceClass.HEAT
+        )
 
         _LOGGER.debug("Casambi overheat binary sensor - init - end")
 
