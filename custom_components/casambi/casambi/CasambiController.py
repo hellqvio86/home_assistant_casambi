@@ -68,7 +68,7 @@ class CasambiController:
         await self._aiocasambi_controller.reconnect()
 
         all_running = True
-        states = self._aiocasambi_controller.get_websocket_states()
+        states = self._aiocasambi_controller.get_websockets_states()
         for state in states:
             if state != STATE_RUNNING:
                 all_running = False
@@ -76,6 +76,7 @@ class CasambiController:
         if not all_running:
             msg = "async_reconnect: could not connect to casambi. "
             msg += f"trying again in {self._network_retry_timer} seconds"
+            msg += f" websockets: {self._aiocasambi_controller.get_websockets()}"
             _LOGGER.debug(msg)
 
             # Try again to reconnect
