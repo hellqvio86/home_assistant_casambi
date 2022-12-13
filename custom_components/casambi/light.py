@@ -81,8 +81,9 @@ async def async_setup_platform(
     """
     Setup Casambi platform, called when setup through configuration.yaml
     """
-    warn_msg = "Using Casambi integration through configuration.yaml is deprecated, "
-    warn_msg += "please consider to switch to configuration flow!"
+    warn_msg = "Using Casambi integration through configuration.yaml is "
+    warn_msg += "deprecated, please consider to "
+    warn_msg += "switch to configuration flow!"
     _LOGGER.warning(warn_msg)
 
     if CONF_CONTROLLER in hass.data[DOMAIN]:
@@ -122,10 +123,10 @@ async def async_setup_platform(
         # Check if entities were selected
         if ATTR_SERV_ENTITY_ID not in call.data:
             # service handle currently only supports selection of entities
-            dbg_msg = f"ServiceCall {call.domain}.{call.service}:"
-            dbg_msg += " No entity was specified."
-            dbg_msg += " Please specify entities instead of areas or devices."
-            _LOGGER.error(dbg_msg)
+            err_msg = f"ServiceCall {call.domain}.{call.service}:"
+            err_msg += " No entity was specified."
+            err_msg += " Please specify entities instead of areas or devices."
+            _LOGGER.error(err_msg)
 
             return
 
