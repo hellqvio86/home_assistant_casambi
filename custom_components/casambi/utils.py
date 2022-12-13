@@ -62,9 +62,9 @@ async def async_create_controller(
         network_timeout = config[CONF_NETWORK_TIMEOUT]
 
     if not user_password and not network_password:
-        raise ConfigurationError(
-            f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} must be set in config!"
-        )
+        err_msg = f"{CONF_USER_PASSWORD} or {CONF_NETWORK_PASSWORD} "
+        err_msg += "must be set in config!"
+        raise ConfigurationError(err_msg)
 
     controller = CasambiController(hass)
 
@@ -94,13 +94,16 @@ async def async_create_controller(
         return None
 
     except aiocasambi.RequestError as err:
-        _LOGGER.error(
-            f"Error connecting to the Casambi, caught aiocasambi.RequestError, error message: {str(err)}"
-        )
+        err_msg = "Error connecting to the Casambi, "
+        err_msg += "caught aiocasambi.RequestError, "
+        err_msg += f"error message: {str(err)}"
+        _LOGGER.error(err_msg)
         return None
 
     except asyncio.TimeoutError:
-        _LOGGER.error("Error connecting to the Casambi, caught asyncio.TimeoutError")
+        err_msg = "Error connecting to the Casambi, "
+        err_msg += "caught asyncio.TimeoutError"
+        _LOGGER.error(err_msg)
         return None
 
     except aiocasambi.AiocasambiException:
