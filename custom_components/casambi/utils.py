@@ -106,8 +106,10 @@ async def async_create_controller(
         _LOGGER.error(err_msg)
         return None
 
-    except aiocasambi.AiocasambiException:
-        _LOGGER.error("Unknown Casambi communication error occurred!")
+    except aiocasambi.AiocasambiException as err:
+        err_msg = "Unknown Casambi communication error occurred! "
+        err_msg += f"err: {err}"
+        _LOGGER.error(err_msg)
         return None
 
     # Sleep so we get some websocket messages,
