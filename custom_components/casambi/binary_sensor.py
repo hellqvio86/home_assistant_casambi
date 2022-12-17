@@ -1,9 +1,11 @@
+"""
+Binary Sensor implementation for Casambi
+"""
 import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-# from .casambi.CasambiOverheatBinarySensorEntity import CasambiOverheatBinarySensorEntity
 from .casambi.CasambiStatusBinarySensorEntity import CasambiStatusBinarySensorEntity
 from .const import (
     DOMAIN,

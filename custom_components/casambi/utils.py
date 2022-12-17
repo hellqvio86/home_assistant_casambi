@@ -85,19 +85,8 @@ async def async_create_controller(
             await aiocasambi_controller.initialize()
             await aiocasambi_controller.start_websockets()
 
-    except aiocasambi.LoginRequired:
-        _LOGGER.error("Connected to casambi but couldn't log in")
-        return None
-
     except aiocasambi.Unauthorized:
-        _LOGGER.error("Connected to casambi but not registered")
-        return None
-
-    except aiocasambi.RequestError as err:
-        err_msg = "Error connecting to the Casambi, "
-        err_msg += "caught aiocasambi.RequestError, "
-        err_msg += f"error message: {str(err)}"
-        _LOGGER.error(err_msg)
+        _LOGGER.error("Connected to casambi but couldn't log in")
         return None
 
     except asyncio.TimeoutError:

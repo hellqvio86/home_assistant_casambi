@@ -54,7 +54,7 @@ class CasambiController:
 
         try:
             await self._aiocasambi_controller.get_network_state()
-        except aiocasambi.LoginRequired:
+        except aiocasambi.Unauthorized:
             # Need to reconnect, session is invalid
             await self.async_reconnect()
 
