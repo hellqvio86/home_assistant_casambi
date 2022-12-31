@@ -318,7 +318,7 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
     async def async_update(self) -> None:
         """Update Casambi entity."""
         if not self.unit.online:
-            _LOGGER.info(f"async_update: unit is not online: {self}")
+            _LOGGER.debug(f"async_update: unit is not online: {self}")
         else:
             if self.unit.value > 0:
                 self._state = True
