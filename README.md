@@ -26,11 +26,11 @@ https://github.com/olofhellqvist/aiocasambi
 
 These modes are implemented:
 
-- on/off
-- brightness
-- color temperature
-- rgb
-- rgbw
+-   on/off
+-   brightness
+-   color temperature
+-   rgb
+-   rgbw
 
 ### Distribution/Vertical
 
@@ -41,10 +41,10 @@ Distribution/Vertical is supported by using **casambi.light_turn_on** service, s
 
 ### Prerequisite
 
-- [Home Assistant](https://www.home-assistant.io/)
-- Request developer api key from Casambi: https://developer.casambi.com/
-- Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
-- Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
+-   [Home Assistant](https://www.home-assistant.io/)
+-   Request developer api key from Casambi: https://developer.casambi.com/
+-   Setup a site: https://support.casambi.com/support/solutions/articles/12000041325-how-to-create-a-site
+-   Running Casambi app with gateway enabled: https://support.casambi.com/support/solutions/articles/12000017046-how-to-enable-a-gateway-for-a-network-
 
 ### Installation
 
@@ -78,13 +78,14 @@ Links to what needs to be done next: https://developers.home-assistant.io/docs/i
 
 ## Other Casambi projects
 
-- https://github.com/hellqvio86/aiocasambi - The Asynchronous I/O Casambi library that this project uses
-- https://github.com/hellqvio86/casambi - Casambi python library
-- https://github.com/awahlig/homebridge-casambi Homebridge plugin for Casambi
+-   https://github.com/hellqvio86/aiocasambi - The Asynchronous I/O Casambi library that this project uses
+-   https://github.com/hellqvio86/casambi - Casambi python library
+-   https://github.com/awahlig/homebridge-casambi Homebridge plugin for Casambi
+-   https://github.com/lkempf/casambi-bt-hass Home Assistant integration for Casambi with Bluetooth support
 
 ## Authors
 
-- **Olof Hellqvist** - _Initial work_
+-   **Olof Hellqvist** - _Initial work_
 
 ## License
 
