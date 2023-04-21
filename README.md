@@ -51,7 +51,10 @@ Distribution/Vertical is supported by using **casambi.light_turn_on** service, s
 #### Installation via HACS (recommended)
 
 1. Setup HACS https://hacs.xyz/
-2. HACS -> Integrations -> `+` -> Casambi -> Install
+2. HACS -> Integrations -> `+` -> Casambi -> Download
+3. Restart home assistant (you have installed a custom plugin).
+4. Go to Settings -> "Devices & Services" -> Add integration -> Casambi
+5. Follow the setup flow.
 
 #### "Manual" Installation
 
