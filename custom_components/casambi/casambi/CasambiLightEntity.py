@@ -24,9 +24,8 @@ except ImportError:
     ATTR_DISTRIBUTION = "distribution"
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 
-from ..const import ATTR_SERV_BRIGHTNESS, ATTR_SERV_DISTRIBUTION, DOMAIN
+from ..const import ATTR_SERV_BRIGHTNESS, ATTR_SERV_DISTRIBUTION
 
 from .CasambiEntity import CasambiEntity
 
