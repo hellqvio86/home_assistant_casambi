@@ -47,6 +47,7 @@ class CasambiEntity(Entity):
             default_model="Casambi",
             model=self.unit.fixture_model,
             sw_version=self.unit.firmware_version,
+            via_device=(DOMAIN, self.unit.network_id),
         )
 
         _LOGGER.debug(f"device_info called returning: {device_info} unit: {self.unit}")
