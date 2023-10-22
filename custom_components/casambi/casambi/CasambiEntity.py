@@ -39,14 +39,14 @@ class CasambiEntity(Entity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information about this Casambi Key Light."""
+
         device_info = DeviceInfo(
             identifiers={(DOMAIN, self.unit.unique_id)},
-            name=self.unit.name,
-            default_manufacturer="Casambi",
             manufacturer=self.unit.oem,
-            default_model="Casambi",
+            name=self.unit.name,
             model=self.unit.fixture_model,
             sw_version=self.unit.firmware_version,
+            via_device=(DOMAIN, self.unit.network_id),
         )
 
         _LOGGER.debug(f"device_info called returning: {device_info} unit: {self.unit}")

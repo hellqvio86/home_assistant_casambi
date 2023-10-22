@@ -25,10 +25,7 @@ except ImportError:
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    ATTR_SERV_BRIGHTNESS,
-    ATTR_SERV_DISTRIBUTION,
-)
+from ..const import ATTR_SERV_BRIGHTNESS, ATTR_SERV_DISTRIBUTION
 
 from .CasambiEntity import CasambiEntity
 
