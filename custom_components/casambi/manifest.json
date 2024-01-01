@@ -1,6 +1,9 @@
 {
   "domain": "casambi",
   "name": "casambi",
+  "codeowners": [
+    "@hellqvio86"
+  ],
   "version": "0.127",
   "config_flow": true,
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
@@ -12,8 +15,5 @@
   "zeroconf": [],
   "homekit": {},
   "dependencies": [],
-  "codeowners": [
-    "@hellqvio86"
-  ],
   "iot_class": "cloud_push"
 }
