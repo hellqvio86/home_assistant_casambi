@@ -4,16 +4,16 @@
   "codeowners": [
     "@hellqvio86"
   ],
-  "version": "0.127",
   "config_flow": true,
+  "dependencies": [],
   "documentation": "https://github.com/hellqvio86/home_assistant_casambi",
+  "homekit": {},
+  "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/hellqvio86/home_assistant_casambi/issues",
   "requirements": [
     "aiocasambi==0.285"
   ],
   "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
-  "dependencies": [],
-  "iot_class": "cloud_push"
+  "version": "0.127",
+  "zeroconf": []
 }
