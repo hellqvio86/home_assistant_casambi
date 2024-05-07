@@ -1,6 +1,7 @@
 """
 Support for Casambi lights.
 """
+
 import logging
 
 import aiocasambi
@@ -131,7 +132,7 @@ class CasambiController:
             self.set_all_lights_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            self._hass.loop.create_task(self.async_reconnect())
+            self._hass.loop.async_create_task(self.async_reconnect())
         elif signal == SIGNAL_CONNECTION_STATE and (data == STATE_DISCONNECTED):
             _LOGGER.debug("signalling_callback websocket STATE_DISCONNECTED")
 
@@ -139,7 +140,7 @@ class CasambiController:
             self.set_all_lights_offline()
 
             _LOGGER.debug("signalling_callback: creating reconnection")
-            self._hass.loop.create_task(self.async_reconnect())
+            self._hass.loop.async_create_task(self.async_reconnect())
         elif signal == SIGNAL_UNIT_PULL_UPDATE:
             # Update units that is specified
             for unit in data:
