@@ -55,13 +55,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     )
 
     # Forward the setup to the sensor platform.
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
-    )
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setups(
-            config_entry, Platform.BINARY_SENSOR
-        )
+    # hass.async_create_task(
+    #    hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
+    # )
+    await hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
+
+    # hass.async_create_task(
+    #    hass.config_entries.async_forward_entry_setups(
+    #        config_entry, Platform.BINARY_SENSOR
+    #    )
+    # )
+    await hass.config_entries.async_forward_entry_setups(
+        config_entry, Platform.BINARY_SENSOR
     )
     return True
 
