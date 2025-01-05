@@ -1,6 +1,7 @@
 """
 Support for Casambi lights.
 """
+
 import logging
 
 from typing import Any, Optional
@@ -17,6 +18,14 @@ from homeassistant.components.light import (
     COLOR_MODE_RGBW,
     SUPPORT_BRIGHTNESS,
 )
+from homeassistant.components.light import ColorMode
+
+# ColorMode.RGB
+# COLOR_MODE_BRIGHTNESS was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.BRIGHTNESS instead, please report it to the author of the 'casambi' custom integration
+# COLOR_MODE_COLOR_TEMP was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.COLOR_TEMP instead, please report it to the author of the 'casambi' custom integration
+# COLOR_MODE_RGB was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.RGB instead, please report it to the author of the 'casambi' custom integration
+# COLOR_MODE_RGBW was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.RGBW instead, please report it to the author of the 'casambi' custom integration
+# SUPPORT_BRIGHTNESS was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use supported_color_modes instead, please report it to the author of the 'casambi' custom integration
 
 try:
     from homeassistant.components.light import ATTR_DISTRIBUTION
@@ -136,27 +145,18 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         return self.unit.get_rgbw_color()
 
     @property
-    def supported_features(self) -> int:
-        """
-        Flag supported features.
-
-        This is deprecated and will be removed in Home Assistant 2021.10.
-        """
-        return SUPPORT_BRIGHTNESS
-
-    @property
     def color_mode(self):
         """
         Set color mode for this entity.
         """
         if self.unit.supports_rgbw():
-            return COLOR_MODE_RGBW
+            return ColorMode.RGBW
         if self.unit.supports_rgb():
-            return COLOR_MODE_RGB
+            return ColorMode.RGB
         if self.unit.supports_color_temperature():
-            return COLOR_MODE_COLOR_TEMP
+            return ColorMode.COLOR_TEMP
         if self.unit.supports_brightness():
-            return COLOR_MODE_BRIGHTNESS
+            return ColorMode.BRIGHTNESS
 
         return None
 
@@ -168,15 +168,15 @@ class CasambiLightEntity(CoordinatorEntity, LightEntity, CasambiEntity):
         supports = []
 
         if self.unit.supports_brightness():
-            supports.append(COLOR_MODE_BRIGHTNESS)
+            supports.append(ColorMode.BRIGHTNESS)
 
         if self.unit.supports_color_temperature():
-            supports.append(COLOR_MODE_COLOR_TEMP)
+            supports.append(ColorMode.COLOR_TEMP)
 
         if self.unit.supports_rgbw():
-            supports.append(COLOR_MODE_RGBW)
+            supports.append(ColorMode.RGBW)
         elif self.unit.supports_rgb():
-            supports.append(COLOR_MODE_RGB)
+            supports.append(ColorMode.RGB)
 
         return supports
 

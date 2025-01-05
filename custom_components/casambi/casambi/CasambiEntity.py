@@ -1,6 +1,7 @@
 """
 Support for Casambi lights.
 """
+
 import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity

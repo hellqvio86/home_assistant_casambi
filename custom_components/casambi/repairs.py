@@ -22,7 +22,7 @@ class RestartRequiredFixFlow(RepairsFlow):
         """
         Handle the first step of a fix flow.
         """
-        return await (self.async_step_confirm_restart())
+        return await self.async_step_confirm_restart()
 
     async def async_step_confirm_restart(
         self, user_input: dict[str, str] | None = None

@@ -1,4 +1,5 @@
 """Constants for the casambi integration."""
+
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 

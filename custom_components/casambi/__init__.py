@@ -1,4 +1,5 @@
 """The casambi integration."""
+
 import asyncio
 import logging
 
@@ -55,10 +56,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     # Forward the setup to the sensor platform.
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, Platform.LIGHT)
+        hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
     )
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(
+        hass.config_entries.async_forward_entry_setups(
             config_entry, Platform.BINARY_SENSOR
         )
     )

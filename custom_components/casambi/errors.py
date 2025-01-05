@@ -1,4 +1,5 @@
 """Errors for the Casambi component."""
+
 from homeassistant.exceptions import HomeAssistantError
 
 
