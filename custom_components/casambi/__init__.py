@@ -5,6 +5,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 
@@ -17,6 +18,8 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+_PLATFORM_LIGHT: list[Platform] = [Platform.SENSOR]
+_PLATFORM_BINARY_SENSOR: list[Platform] = [Platform.BINARY_SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
@@ -48,8 +51,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(
         hass, config
     )
+
     if not controller:
         return False
+
     hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(
         hass, config, controller
     )
@@ -58,16 +63,19 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     # hass.async_create_task(
     #    hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
     # )
-    await hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
+    # await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(config_entry, _PLATFORM_LIGHT)
 
     # hass.async_create_task(
     #    hass.config_entries.async_forward_entry_setups(
     #        config_entry, Platform.BINARY_SENSOR
     #    )
     # )
+
     await hass.config_entries.async_forward_entry_setups(
-        config_entry, Platform.BINARY_SENSOR
+        config_entry, _PLATFORM_BINARY_SENSOR
     )
+
     return True
 
 
