@@ -48,8 +48,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         )
         return True
 
-    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(
-        hass, config
+    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await hass.async_add_executor_job(
+        async_create_controller(hass, config)
     )
 
     if not controller:

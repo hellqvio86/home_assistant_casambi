@@ -70,24 +70,22 @@ async def async_create_controller(
     controller = CasambiController(hass)
 
     aiocasambi_controller = controller.aiocasambi_controller = (
-        hass.async_add_executor_job(
-            aiocasambi.Controller(
-                email=email,
-                user_password=user_password,
-                network_password=network_password,
-                api_key=api_key,
-                websession=aiohttp_client.async_get_clientsession(hass),
-                sslcontext=ssl.create_default_context(),
-                callback=controller.signalling_callback,
-                network_timeout=network_timeout,
-            )
+        await aiocasambi.Controller(
+            email=email,
+            user_password=user_password,
+            network_password=network_password,
+            api_key=api_key,
+            websession=aiohttp_client.async_get_clientsession(hass),
+            sslcontext=ssl.create_default_context(),
+            callback=controller.signalling_callback,
+            network_timeout=network_timeout,
         )
     )
 
     try:
-        await hass.async_add_executor_job(aiocasambi_controller.create_session)
-        await hass.async_add_executor_job(aiocasambi_controller.initialize)
-        await hass.async_add_executor_job(aiocasambi_controller.start_websockets)
+        await aiocasambi_controller.create_session()
+        await aiocasambi_controller.initialize()
+        await aiocasambi_controller.start_websockets()
 
     except aiocasambi.Unauthorized:
         _LOGGER.error("Connected to casambi but couldn't log in")
