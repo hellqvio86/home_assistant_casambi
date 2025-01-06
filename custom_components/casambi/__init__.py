@@ -55,8 +55,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     if not controller:
         return False
 
-    hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(
-        hass, config, controller
+    hass.data[DOMAIN][CONF_COORDINATOR] = await hass.async_add_executor_job(
+        async_create_coordinator, hass, config, controller
     )
 
     # Forward the setup to the sensor platform.
