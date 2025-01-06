@@ -82,9 +82,12 @@ async def async_create_controller(
 
     try:
         with async_timeout.timeout(MAX_START_UP_TIME):
-            await aiocasambi_controller.create_session()
-            await aiocasambi_controller.initialize()
-            await aiocasambi_controller.start_websockets()
+            await hass.async_add_executor_job(aiocasambi_controller.create_session)
+            await hass.async_add_executor_job(aiocasambi_controller.initialize)
+            await hass.async_add_executor_job(aiocasambi_controller.start_websockets)
+            # await aiocasambi_controller.create_session()
+            # await aiocasambi_controller.initialize()
+            # await aiocasambi_controller.start_websockets()
 
     except aiocasambi.Unauthorized:
         _LOGGER.error("Connected to casambi but couldn't log in")
