@@ -47,10 +47,6 @@ async def async_setup_entry(
     controller = hass.data[DOMAIN][CONF_CONTROLLER]
     coordinator = hass.data[DOMAIN][CONF_COORDINATOR]
 
-    _LOGGER.debug(
-        f"Arguments for light sensor entities: hass: {hass}, config_entry: {config_entry} controller: {controller} async_add_entities: {async_add_entities}"
-    )
-
     units = controller.aiocasambi_controller.get_units()
     for unit in units:
         if not unit.is_light():
