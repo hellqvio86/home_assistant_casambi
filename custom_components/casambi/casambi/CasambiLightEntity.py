@@ -12,11 +12,6 @@ from homeassistant.components.light import (
     ATTR_COLOR_TEMP,
     ATTR_RGB_COLOR,
     ATTR_RGBW_COLOR,
-    COLOR_MODE_BRIGHTNESS,
-    COLOR_MODE_COLOR_TEMP,
-    COLOR_MODE_RGB,
-    COLOR_MODE_RGBW,
-    SUPPORT_BRIGHTNESS,
 )
 from homeassistant.components.light import ColorMode
 
