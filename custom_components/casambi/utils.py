@@ -120,6 +120,10 @@ async def async_create_coordinator(
     if CONF_SCAN_INTERVAL in config:
         scan_interval = config[CONF_SCAN_INTERVAL]
 
+    _LOGGER.debug(
+        f"Creating coordinator with scan_interval: {scan_interval} hass: {hass} config: {config} controller: {controller}"
+    )
+
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
