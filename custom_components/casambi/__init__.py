@@ -18,7 +18,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-_PLATFORM_LIGHT: list[Platform] = [Platform.SENSOR]
+_PLATFORM_LIGHT: list[Platform] = [Platform.LIGHT]
 _PLATFORM_BINARY_SENSOR: list[Platform] = [Platform.BINARY_SENSOR]
 
 
