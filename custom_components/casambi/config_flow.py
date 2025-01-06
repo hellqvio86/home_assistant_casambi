@@ -1,6 +1,7 @@
 """
 Config flow for Casambi integration
 """
+
 import logging
 from typing import Any, Dict, Optional
 

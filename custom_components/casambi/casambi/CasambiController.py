@@ -54,7 +54,10 @@ class CasambiController:
             return
 
         try:
-            await self._aiocasambi_controller.get_network_state()
+            await self._hass.async_add_executor_job(
+                self._aiocasambi_controller.get_network_state
+            )
+            # await self._aiocasambi_controller.get_network_state()
         except aiocasambi.Unauthorized:
             # Need to reconnect, session is invalid
             await self.async_reconnect()

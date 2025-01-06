@@ -1,13 +1,14 @@
 """
 Utils for Casambi
 """
+
 import logging
 import ssl
 import asyncio
+
 from datetime import timedelta
 
 import aiocasambi
-import async_timeout
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -29,10 +30,16 @@ from .const import (
     CONF_NETWORK_TIMEOUT,
     DEFAULT_NETWORK_TIMEOUT,
     DEFAULT_POLLING_TIME,
-    MAX_START_UP_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_create_ssl_context(hass: HomeAssistant):
+    """
+    Create SSL context in an executor to avoid blocking the event loop.
+    """
+    return await hass.async_add_executor_job(ssl.create_default_context)
 
 
 async def async_create_controller(
@@ -44,6 +51,8 @@ async def async_create_controller(
     api_key = config[CONF_API_KEY]
 
     email = config[CONF_EMAIL]
+
+    ssl_context = await async_create_ssl_context(hass)
 
     user_password = None
     if CONF_USER_PASSWORD in config:
@@ -74,16 +83,15 @@ async def async_create_controller(
         network_password=network_password,
         api_key=api_key,
         websession=aiohttp_client.async_get_clientsession(hass),
-        sslcontext=ssl.create_default_context(),
+        sslcontext=ssl_context,
         callback=controller.signalling_callback,
         network_timeout=network_timeout,
     )
 
     try:
-        with async_timeout.timeout(MAX_START_UP_TIME):
-            await aiocasambi_controller.create_session()
-            await aiocasambi_controller.initialize()
-            await aiocasambi_controller.start_websockets()
+        await aiocasambi_controller.create_session()
+        await aiocasambi_controller.initialize()
+        await aiocasambi_controller.start_websockets()
 
     except aiocasambi.Unauthorized:
         _LOGGER.error("Connected to casambi but couldn't log in")
@@ -117,6 +125,10 @@ async def async_create_coordinator(
     scan_interval = DEFAULT_POLLING_TIME
     if CONF_SCAN_INTERVAL in config:
         scan_interval = config[CONF_SCAN_INTERVAL]
+
+    _LOGGER.debug(
+        f"Creating coordinator with scan_interval: {scan_interval} hass: {hass} config: {config} controller: {controller}"
+    )
 
     coordinator = DataUpdateCoordinator(
         hass,

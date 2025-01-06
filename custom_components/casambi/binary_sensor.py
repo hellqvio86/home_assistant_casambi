@@ -1,6 +1,7 @@
 """
 Binary Sensor implementation for Casambi
 """
+
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -31,6 +32,7 @@ async def async_setup_entry(
     _LOGGER.debug(f"Setting up binary sensor entities. config_entry:{config_entry}")
 
     controller = hass.data[DOMAIN][CONF_CONTROLLER]
+
     units = controller.aiocasambi_controller.get_units()
     binary_sensors = []
 

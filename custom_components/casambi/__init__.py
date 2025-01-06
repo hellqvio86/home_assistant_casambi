@@ -1,4 +1,5 @@
 """The casambi integration."""
+
 import asyncio
 import logging
 
@@ -7,15 +8,15 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 
+import async_timeout
+
 from .utils import async_create_controller, async_create_coordinator
 
-from .const import (
-    DOMAIN,
-    CONF_CONTROLLER,
-    CONF_COORDINATOR,
-)
+from .const import DOMAIN, CONF_CONTROLLER, CONF_COORDINATOR, MAX_START_UP_TIME
 
 _LOGGER = logging.getLogger(__name__)
+_PLATFORM_LIGHT: list[Platform] = [Platform.LIGHT]
+_PLATFORM_BINARY_SENSOR: list[Platform] = [Platform.BINARY_SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
@@ -44,24 +45,47 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         )
         return True
 
-    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await async_create_controller(
-        hass, config
-    )
+    controller = hass.data[DOMAIN][CONF_CONTROLLER] = None
+
+    # controller = hass.data[DOMAIN][CONF_CONTROLLER] = await hass.async_add_executor_job(
+    #    async_create_controller, hass, config
+    # )
+    try:
+        with async_timeout.timeout(MAX_START_UP_TIME):
+            controller = hass.data[DOMAIN][CONF_CONTROLLER] = (
+                await async_create_controller(hass, config)
+            )
+
+    except asyncio.TimeoutError:
+        err_msg = "Error connecting to the Casambi, "
+        err_msg += "caught asyncio.TimeoutError"
+        _LOGGER.error(err_msg)
+        return None
+
     if not controller:
         return False
-    hass.data[DOMAIN][CONF_COORDINATOR] = await async_create_coordinator(
-        hass, config, controller
+
+    hass.data[DOMAIN][CONF_COORDINATOR] = await hass.async_add_executor_job(
+        async_create_coordinator, hass, config, controller
     )
 
     # Forward the setup to the sensor platform.
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, Platform.LIGHT)
+    # hass.async_create_task(
+    #    hass.config_entries.async_forward_entry_setups(config_entry, Platform.LIGHT)
+    # )
+    # await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(config_entry, _PLATFORM_LIGHT)
+
+    # hass.async_create_task(
+    #    hass.config_entries.async_forward_entry_setups(
+    #        config_entry, Platform.BINARY_SENSOR
+    #    )
+    # )
+
+    await hass.config_entries.async_forward_entry_setups(
+        config_entry, _PLATFORM_BINARY_SENSOR
     )
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(
-            config_entry, Platform.BINARY_SENSOR
-        )
-    )
+
     return True
 
 
