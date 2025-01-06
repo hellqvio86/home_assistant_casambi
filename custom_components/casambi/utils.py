@@ -5,10 +5,10 @@ Utils for Casambi
 import logging
 import ssl
 import asyncio
+
 from datetime import timedelta
 
 import aiocasambi
-import async_timeout
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -30,10 +30,16 @@ from .const import (
     CONF_NETWORK_TIMEOUT,
     DEFAULT_NETWORK_TIMEOUT,
     DEFAULT_POLLING_TIME,
-    MAX_START_UP_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_create_ssl_context(hass: HomeAssistant):
+    """
+    Create SSL context in an executor to avoid blocking the event loop.
+    """
+    return await hass.async_add_executor_job(ssl.create_default_context)
 
 
 async def async_create_controller(
@@ -45,6 +51,8 @@ async def async_create_controller(
     api_key = config[CONF_API_KEY]
 
     email = config[CONF_EMAIL]
+
+    ssl_context = await async_create_ssl_context(hass)
 
     user_password = None
     if CONF_USER_PASSWORD in config:
@@ -69,17 +77,15 @@ async def async_create_controller(
 
     controller = CasambiController(hass)
 
-    aiocasambi_controller = controller.aiocasambi_controller = (
-        await aiocasambi.Controller(
-            email=email,
-            user_password=user_password,
-            network_password=network_password,
-            api_key=api_key,
-            websession=aiohttp_client.async_get_clientsession(hass),
-            sslcontext=ssl.create_default_context(),
-            callback=controller.signalling_callback,
-            network_timeout=network_timeout,
-        )
+    aiocasambi_controller = controller.aiocasambi_controller = aiocasambi.Controller(
+        email=email,
+        user_password=user_password,
+        network_password=network_password,
+        api_key=api_key,
+        websession=aiohttp_client.async_get_clientsession(hass),
+        sslcontext=ssl_context,
+        callback=controller.signalling_callback,
+        network_timeout=network_timeout,
     )
 
     try:

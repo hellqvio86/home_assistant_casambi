@@ -5,17 +5,14 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.issue_registry import async_create_issue, IssueSeverity
 
+import async_timeout
+
 from .utils import async_create_controller, async_create_coordinator
 
-from .const import (
-    DOMAIN,
-    CONF_CONTROLLER,
-    CONF_COORDINATOR,
-)
+from .const import DOMAIN, CONF_CONTROLLER, CONF_COORDINATOR, MAX_START_UP_TIME
 
 _LOGGER = logging.getLogger(__name__)
 _PLATFORM_LIGHT: list[Platform] = [Platform.LIGHT]
@@ -48,9 +45,22 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         )
         return True
 
-    controller = hass.data[DOMAIN][CONF_CONTROLLER] = await hass.async_add_executor_job(
-        async_create_controller, hass, config
-    )
+    controller = hass.data[DOMAIN][CONF_CONTROLLER] = None
+
+    # controller = hass.data[DOMAIN][CONF_CONTROLLER] = await hass.async_add_executor_job(
+    #    async_create_controller, hass, config
+    # )
+    try:
+        with async_timeout.timeout(MAX_START_UP_TIME):
+            controller = hass.data[DOMAIN][CONF_CONTROLLER] = (
+                await async_create_controller(hass, config)
+            )
+
+    except asyncio.TimeoutError:
+        err_msg = "Error connecting to the Casambi, "
+        err_msg += "caught asyncio.TimeoutError"
+        _LOGGER.error(err_msg)
+        return None
 
     if not controller:
         return False

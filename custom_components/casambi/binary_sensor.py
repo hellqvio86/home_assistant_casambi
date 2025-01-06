@@ -32,6 +32,11 @@ async def async_setup_entry(
     _LOGGER.debug(f"Setting up binary sensor entities. config_entry:{config_entry}")
 
     controller = hass.data[DOMAIN][CONF_CONTROLLER]
+
+    _LOGGER.debug(
+        f"Arguments for binary sensor entities: hass: {hass}, controller: {controller} async_add_entities: {async_add_entities}"
+    )
+
     units = controller.aiocasambi_controller.get_units()
     binary_sensors = []
 
