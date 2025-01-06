@@ -15,13 +15,6 @@ from homeassistant.components.light import (
 )
 from homeassistant.components.light import ColorMode
 
-# ColorMode.RGB
-# COLOR_MODE_BRIGHTNESS was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.BRIGHTNESS instead, please report it to the author of the 'casambi' custom integration
-# COLOR_MODE_COLOR_TEMP was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.COLOR_TEMP instead, please report it to the author of the 'casambi' custom integration
-# COLOR_MODE_RGB was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.RGB instead, please report it to the author of the 'casambi' custom integration
-# COLOR_MODE_RGBW was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use ColorMode.RGBW instead, please report it to the author of the 'casambi' custom integration
-# SUPPORT_BRIGHTNESS was used from casambi, this is a deprecated constant which will be removed in HA Core 2026.1. Use supported_color_modes instead, please report it to the author of the 'casambi' custom integration
-
 try:
     from homeassistant.components.light import ATTR_DISTRIBUTION
 except ImportError:
